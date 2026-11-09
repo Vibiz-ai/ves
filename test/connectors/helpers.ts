@@ -1,5 +1,6 @@
 // Shared fakes for the connectors tests: in-memory child processes, a fetch that calls in-process handlers, a
 // recording HarnessIO, and the support-desk config over core's skeleton cases. No network (test/setup.ts).
+import { after } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
@@ -55,6 +56,9 @@ export function deps(o: Partial<ConnectorDeps> & { catalog?: Catalog } = {}): Co
 // ------------------------------------------------------------------------------------------ fake processes
 /** A child process whose "program" is a function receiving stdin lines and writing stdout lines. */
 export type FakeProgram = (io: { stdin: AsyncQueue<string>; out: (line: string) => void; err: (s: string) => void; exit: (code: number) => void; argv: string[]; env: Record<string, string> }) => void | Promise<void>;
+// Fakes a test never ends would hold the event loop open forever: release them when the test file is done.
+const LIVE_FAKES = new Set<ReturnType<typeof setInterval>>();
+after(() => { for (const h of LIVE_FAKES) clearInterval(h); LIVE_FAKES.clear(); });
 export function fakeSpawn(program: FakeProgram, seen: { cmd?: string; args?: string[]; env?: Record<string, string>; spawns: number; stdin: string[] } = { spawns: 0, stdin: [] }): SpawnLike & { seen: typeof seen } {
   const f = ((cmd: string, args: string[], o: { cwd: string; env: Record<string, string> }): ChildLike => {
     seen.cmd = cmd; seen.args = args; seen.env = o.env; seen.spawns++;
@@ -64,7 +68,11 @@ export function fakeSpawn(program: FakeProgram, seen: { cmd?: string; args?: str
     let done!: (x: { code: number | null; signal: string | null }) => void;
     const exited = new Promise<{ code: number | null; signal: string | null }>((r) => { done = r; });
     let alive = true;
-    const exit = (code: number, signal: string | null = null) => { if (!alive) return; alive = false; stdin.close(); setImmediate(() => { stdout.close(); stderr.close(); done({ code, signal }); }); };
+    // A real child process keeps the event loop alive; the fake must too, or Node 22's test runner ends a test
+    // whose only pending work is an unref'd timeout ("Promise resolution is still pending but the event loop has already resolved").
+    const handle = setInterval(() => {}, 1 << 30);
+    LIVE_FAKES.add(handle);
+    const exit = (code: number, signal: string | null = null) => { if (!alive) return; alive = false; clearInterval(handle); LIVE_FAKES.delete(handle); stdin.close(); setImmediate(() => { stdout.close(); stderr.close(); done({ code, signal }); }); };
     const iter = (q: AsyncQueue<string>): AsyncIterable<string> => ({ async *[Symbol.asyncIterator]() { for (;;) { const v = await q.next(); if (v === null) return; yield v; } } });
     void Promise.resolve(program({ stdin, out: (l) => { if (alive) stdout.push(l.endsWith('\n') ? l : l + '\n'); }, err: (s) => stderr.push(s), exit: (c) => exit(c), argv: args, env: o.env }));
     return {

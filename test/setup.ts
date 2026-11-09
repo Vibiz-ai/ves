@@ -7,3 +7,12 @@ const refuse = (what: string) => () => { throw new Error(`network call attempted
 (globalThis as { fetch: unknown }).fetch = refuse('fetch');
 (net.Socket.prototype as unknown as { connect: unknown }).connect = refuse('net.Socket.connect');
 (globalThis as { __VES_NETWORK_LOCKED__?: boolean }).__VES_NETWORK_LOCKED__ = true;
+
+// Node 22's test runner ends a file whose only pending work is an unref'd timer (the harness unrefs its timeouts so
+// the CLI never hangs), failing it with "Promise resolution is still pending but the event loop has already resolved".
+// Hold one handle for the life of each test file, the way a real agent process or socket would, and release it at the end.
+if (process.env.NODE_TEST_CONTEXT) {
+  const { after } = await import('node:test');
+  const keepAlive = setInterval(() => {}, 1 << 30);
+  after(() => clearInterval(keepAlive));
+}
