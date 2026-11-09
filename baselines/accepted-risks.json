@@ -1,0 +1,5 @@
+{
+  "schema_version": "ves-accepted-risks/1",
+  "note": "STANDARD §7.5 / §8.4: founder-signed accepted-risk rows naming exactly (surface, host_family, tool, path). Only these may exempt a G-3 violation. Empty at VES-1.0.",
+  "rows": []
+}

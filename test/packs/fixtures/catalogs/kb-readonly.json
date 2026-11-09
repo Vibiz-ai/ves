@@ -1,0 +1,68 @@
+{
+  "$schema": "https://vibiz.ai/schemas/ves/config-1.json",
+  "schema_version": "ves-config/1",
+  "project": "kb-readonly",
+  "agent": {
+    "name": "kb-readonly",
+    "framework": "plain-python",
+    "connection": {
+      "type": "mock"
+    }
+  },
+  "$comment": "Read-only catalog: packs that need write or gated tools must be skipped with a reason.",
+  "tools": {
+    "backend": {
+      "type": "sim"
+    },
+    "catalog": [
+      {
+        "name": "search_articles",
+        "classes": [
+          "read"
+        ],
+        "input_schema": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "q": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "required": [
+            "q"
+          ]
+        }
+      },
+      {
+        "name": "get_article",
+        "classes": [
+          "read"
+        ],
+        "input_schema": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "id": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "required": [
+            "id"
+          ]
+        }
+      }
+    ]
+  },
+  "variants": {
+    "default": {
+      "capabilities": [
+        "multi_turn",
+        "hitl_structured"
+      ]
+    }
+  },
+  "packs": [],
+  "suites": []
+}

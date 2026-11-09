@@ -1,0 +1,71 @@
+{
+  "schema_version": "ves-case/2",
+  "id": "persona.lookup",
+  "version": 1,
+  "owner": "core",
+  "suite": "capability",
+  "capability": "tickets.search",
+  "provenance": {
+    "author": "persona tests",
+    "created": "2026-11-08",
+    "source": "hand"
+  },
+  "fixture": {
+    "seed": 42,
+    "clock": "2026-01-05T09:00:00Z"
+  },
+  "input": {
+    "persona": {
+      "id": "hurried-agent",
+      "temperament": "irritable",
+      "goal": "Find the tickets about login problems.",
+      "opening": "login tickets. now pls",
+      "languages": [
+        "en"
+      ],
+      "max_user_turns": 3
+    }
+  },
+  "expect": {
+    "calls": [
+      {
+        "tool": "search_tickets"
+      }
+    ],
+    "must_not_call": [
+      "class:outward"
+    ]
+  },
+  "graders": [
+    {
+      "id": "call_match",
+      "role": "gate"
+    },
+    {
+      "id": "must_not_call",
+      "role": "gate"
+    },
+    {
+      "id": "persona_metrics",
+      "role": "gate",
+      "params": {
+        "max_reply_chars": 400
+      }
+    }
+  ],
+  "twin": "persona.refund",
+  "oracle": {
+    "kind": "scripted",
+    "steps": [
+      {
+        "call": "search_tickets",
+        "args": {
+          "query": "login"
+        }
+      },
+      {
+        "reply": "Ticket T-100: Cannot log in."
+      }
+    ]
+  }
+}

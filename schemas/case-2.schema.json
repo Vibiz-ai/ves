@@ -1,0 +1,1076 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://vibiz.ai/schemas/ves/case-2.json",
+  "title": "VES case v2 (framework-agnostic)",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "id",
+    "version",
+    "suite",
+    "owner",
+    "provenance",
+    "fixture",
+    "input",
+    "expect",
+    "oracle"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "ves-case/2"
+    },
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9._+-]{2,119}$"
+    },
+    "version": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "capability": {
+      "type": "string",
+      "pattern": "^[a-z0-9_]+(\\.[a-z0-9_]+)*$"
+    },
+    "suite": {
+      "enum": [
+        "smoke",
+        "regression",
+        "capability",
+        "safety",
+        "sealed"
+      ]
+    },
+    "safety": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9-]{1,39}$"
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "uniqueItems": true
+    },
+    "variants": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/variantPattern"
+      }
+    },
+    "requires": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "pattern": "^[a-z0-9_]+$"
+      }
+    },
+    "owner": {
+      "type": "string",
+      "minLength": 1
+    },
+    "provenance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "author",
+        "created",
+        "source"
+      ],
+      "properties": {
+        "author": {
+          "type": "string"
+        },
+        "created": {
+          "type": "string",
+          "format": "date"
+        },
+        "source": {
+          "enum": [
+            "hand",
+            "production-failure",
+            "red-team",
+            "generated",
+            "migrated"
+          ]
+        },
+        "source_ref": {
+          "type": "string"
+        },
+        "redacted": {
+          "type": "boolean"
+        },
+        "blind_to": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "pack": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "id",
+            "version",
+            "template"
+          ],
+          "properties": {
+            "id": {
+              "type": "string"
+            },
+            "version": {
+              "type": "string"
+            },
+            "template": {
+              "type": "string"
+            },
+            "bindings": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "run_id": {
+          "type": "string",
+          "description": "The run the case was captured from (ves cases from-trace)."
+        },
+        "row_id": {
+          "type": "string",
+          "description": "The result row the case was captured from."
+        },
+        "captured_at": {
+          "type": "string",
+          "format": "date-time",
+          "description": "When the case was captured."
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "source": {
+                "const": "production-failure"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "redacted",
+              "source_ref"
+            ],
+            "properties": {
+              "redacted": {
+                "const": true
+              }
+            }
+          }
+        }
+      ]
+    },
+    "fixture": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "seed",
+        "clock"
+      ],
+      "properties": {
+        "state": {
+          "oneOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "object"
+            }
+          ],
+          "description": "Path (relative to the case file, then the pack dir, then the config fixtures dir) or inline JSON. Default: config fixtures.state."
+        },
+        "state_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$",
+          "description": "Required when state is a path."
+        },
+        "seed": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2147483647
+        },
+        "clock": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "principal": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "role": {
+              "$ref": "#/$defs/role"
+            },
+            "tenant": {
+              "type": "string"
+            },
+            "id": {
+              "type": "string"
+            }
+          }
+        },
+        "context": {
+          "type": "object"
+        },
+        "tenants": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "id"
+            ],
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "state": {
+                "type": "string"
+              },
+              "entities_file": {
+                "type": "string"
+              },
+              "entities": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 3
+                }
+              }
+            }
+          }
+        },
+        "plants": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "at",
+              "canary"
+            ],
+            "properties": {
+              "at": {
+                "oneOf": [
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "tool"
+                    ],
+                    "properties": {
+                      "tool": {
+                        "$ref": "#/$defs/toolName"
+                      },
+                      "path": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "location"
+                    ],
+                    "properties": {
+                      "location": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                ]
+              },
+              "ref": {
+                "type": "string"
+              },
+              "text": {
+                "type": "string"
+              },
+              "canary": {
+                "type": "string",
+                "minLength": 8
+              }
+            },
+            "oneOf": [
+              {
+                "required": [
+                  "ref"
+                ]
+              },
+              {
+                "required": [
+                  "text"
+                ]
+              }
+            ]
+          }
+        },
+        "tool_overrides": {
+          "type": "object",
+          "propertyNames": {
+            "$ref": "#/$defs/toolName"
+          },
+          "additionalProperties": {
+            "type": "object"
+          }
+        }
+      }
+    },
+    "input": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "turns": {
+          "type": "array",
+          "items": {
+            "oneOf": [
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "say"
+                ],
+                "properties": {
+                  "say": {
+                    "type": "string"
+                  },
+                  "as": {
+                    "$ref": "#/$defs/role"
+                  },
+                  "thread": {
+                    "enum": [
+                      "main",
+                      "other"
+                    ]
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "hitl"
+                ],
+                "properties": {
+                  "hitl": {
+                    "enum": [
+                      "approve",
+                      "reject",
+                      "timeout",
+                      "ambiguous"
+                    ]
+                  },
+                  "as": {
+                    "$ref": "#/$defs/role"
+                  },
+                  "thread": {
+                    "enum": [
+                      "main",
+                      "other"
+                    ]
+                  },
+                  "args_edited": {
+                    "type": "object"
+                  },
+                  "text": {
+                    "type": "string"
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "advance_clock"
+                ],
+                "properties": {
+                  "advance_clock": {
+                    "type": "string",
+                    "pattern": "^P(?!$)(\\d+D)?(T(\\d+H)?(\\d+M)?(\\d+S)?)?$"
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "wake"
+                ],
+                "properties": {
+                  "wake": {
+                    "type": "string"
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "rpc"
+                ],
+                "properties": {
+                  "rpc": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "method"
+                    ],
+                    "properties": {
+                      "method": {
+                        "type": "string"
+                      },
+                      "params": {
+                        "type": "object"
+                      }
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        },
+        "persona": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "id": {
+              "type": "string"
+            },
+            "ref": {
+              "$ref": "#/$defs/personaId"
+            },
+            "goal": {
+              "type": "string",
+              "minLength": 1
+            },
+            "temperament": {
+              "$ref": "#/$defs/temperaments"
+            },
+            "max_user_turns": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 30
+            },
+            "name": {
+              "type": "string"
+            },
+            "background": {
+              "type": "string"
+            },
+            "languages": {
+              "$ref": "#/$defs/languages"
+            },
+            "style": {
+              "$ref": "#/$defs/personaStyle"
+            },
+            "opening": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "anyOf": [
+            {
+              "required": [
+                "ref"
+              ]
+            },
+            {
+              "required": [
+                "id",
+                "temperament",
+                "goal"
+              ]
+            }
+          ]
+        },
+        "trace": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "file",
+            "format"
+          ],
+          "properties": {
+            "file": {
+              "type": "string"
+            },
+            "format": {
+              "enum": [
+                "otel-genai",
+                "atif",
+                "openai-agents"
+              ]
+            }
+          }
+        }
+      },
+      "anyOf": [
+        {
+          "required": [
+            "turns"
+          ]
+        },
+        {
+          "required": [
+            "trace"
+          ]
+        },
+        {
+          "required": [
+            "persona"
+          ]
+        }
+      ]
+    },
+    "expect": {
+      "type": "object",
+      "additionalProperties": false,
+      "minProperties": 1,
+      "properties": {
+        "calls": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/callMatcher"
+          }
+        },
+        "must_not_call": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/toolRef"
+          }
+        },
+        "gated": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "tool"
+            ],
+            "properties": {
+              "tool": {
+                "$ref": "#/$defs/toolName"
+              }
+            }
+          }
+        },
+        "effects": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "tool": {
+                "$ref": "#/$defs/toolName"
+              },
+              "class": {
+                "$ref": "#/$defs/toolClass"
+              },
+              "alias": {
+                "type": "string"
+              },
+              "match": {
+                "type": "object"
+              },
+              "count": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "min": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "max": {
+                    "type": "integer",
+                    "minimum": 0
+                  }
+                }
+              }
+            },
+            "oneOf": [
+              {
+                "required": [
+                  "tool"
+                ]
+              },
+              {
+                "required": [
+                  "class"
+                ]
+              },
+              {
+                "required": [
+                  "alias"
+                ]
+              }
+            ]
+          }
+        },
+        "no_outward_side_effects": {
+          "type": "boolean"
+        },
+        "hitl": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "requested": {
+              "type": "object",
+              "properties": {
+                "min": {
+                  "type": "integer"
+                },
+                "max": {
+                  "type": "integer"
+                }
+              }
+            },
+            "before": {
+              "$ref": "#/$defs/toolName"
+            }
+          }
+        },
+        "state": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "pointer"
+            ],
+            "properties": {
+              "pointer": {
+                "type": "string"
+              },
+              "equals": {},
+              "exists": {
+                "type": "boolean"
+              }
+            }
+          }
+        },
+        "facts": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "forbid": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "regex"
+          }
+        },
+        "format": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "max_chars": {
+              "type": "integer"
+            },
+            "max_parts": {
+              "type": "integer"
+            },
+            "no_cards": {
+              "type": "boolean"
+            }
+          }
+        },
+        "judge": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "dimension",
+              "rubric_ref",
+              "reference"
+            ],
+            "properties": {
+              "dimension": {
+                "type": "string",
+                "pattern": "^[a-z_]+$"
+              },
+              "rubric_ref": {
+                "type": "string"
+              },
+              "reference": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          }
+        }
+      }
+    },
+    "graders": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "role"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^([a-z_]+|[a-z0-9-]+/[a-z0-9_]+)$"
+          },
+          "role": {
+            "enum": [
+              "gate",
+              "advisory"
+            ]
+          },
+          "params": {
+            "type": "object"
+          }
+        }
+      }
+    },
+    "overrides": {
+      "type": "object",
+      "propertyNames": {
+        "$ref": "#/$defs/variantPattern"
+      },
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "expect": {
+            "type": "object"
+          },
+          "skip": {
+            "type": "string",
+            "minLength": 5
+          }
+        }
+      }
+    },
+    "twin": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9._+-]{2,119}$"
+    },
+    "oracle": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind"
+      ],
+      "properties": {
+        "kind": {
+          "enum": [
+            "scripted",
+            "refusal"
+          ]
+        },
+        "steps": {
+          "type": "array",
+          "items": {
+            "oneOf": [
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "call",
+                  "args"
+                ],
+                "properties": {
+                  "call": {
+                    "$ref": "#/$defs/toolName"
+                  },
+                  "args": {
+                    "type": "object"
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "ask"
+                ],
+                "properties": {
+                  "ask": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "tool",
+                      "args"
+                    ],
+                    "properties": {
+                      "tool": {
+                        "$ref": "#/$defs/toolName"
+                      },
+                      "args": {
+                        "type": "object"
+                      },
+                      "prompt": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "reply"
+                ],
+                "properties": {
+                  "reply": {
+                    "type": "string"
+                  }
+                }
+              }
+            ]
+          }
+        }
+      }
+    },
+    "trials": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "k_min": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 16
+        }
+      }
+    },
+    "limits": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "timeout_s": {
+          "type": "integer",
+          "minimum": 10,
+          "maximum": 900,
+          "default": 180
+        },
+        "max_tool_calls": {
+          "type": "integer",
+          "minimum": 1,
+          "default": 40
+        }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "suite": {
+            "const": "safety"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "safety"
+        ]
+      }
+    },
+    {
+      "if": {
+        "anyOf": [
+          {
+            "properties": {
+              "expect": {
+                "required": [
+                  "must_not_call"
+                ]
+              }
+            }
+          },
+          {
+            "properties": {
+              "expect": {
+                "properties": {
+                  "no_outward_side_effects": {
+                    "const": true
+                  }
+                },
+                "required": [
+                  "no_outward_side_effects"
+                ]
+              }
+            }
+          }
+        ]
+      },
+      "then": {
+        "required": [
+          "twin"
+        ]
+      }
+    }
+  ],
+  "$defs": {
+    "toolName": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_][A-Za-z0-9_.:/-]{0,127}$"
+    },
+    "toolClass": {
+      "enum": [
+        "read",
+        "write",
+        "spend",
+        "outward",
+        "destructive",
+        "gated"
+      ]
+    },
+    "toolRef": {
+      "type": "string",
+      "pattern": "^(class:(read|write|spend|outward|destructive|gated)|[A-Za-z0-9_][A-Za-z0-9_.:/-]{0,127})$"
+    },
+    "role": {
+      "enum": [
+        "owner",
+        "member",
+        "outsider",
+        "system"
+      ]
+    },
+    "variantPattern": {
+      "type": "string",
+      "pattern": "^(\\*|[a-z0-9][a-z0-9._-]*(/(\\*|[a-z0-9][a-z0-9._-]*))?)$"
+    },
+    "callMatcher": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "tool": {
+          "$ref": "#/$defs/toolName"
+        },
+        "class": {
+          "$ref": "#/$defs/toolClass"
+        },
+        "args": {
+          "type": "object"
+        },
+        "order": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "min": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "max": {
+          "type": "integer",
+          "minimum": 0
+        }
+      },
+      "oneOf": [
+        {
+          "required": [
+            "tool"
+          ]
+        },
+        {
+          "required": [
+            "class"
+          ]
+        }
+      ]
+    },
+    "personaId": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9._-]{0,63}$"
+    },
+    "temperament": {
+      "enum": [
+        "eager",
+        "busy",
+        "cold",
+        "sceptical",
+        "irritable",
+        "vague",
+        "goal_changing"
+      ]
+    },
+    "temperaments": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/temperament"
+        },
+        {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/temperament"
+          }
+        }
+      ]
+    },
+    "languages": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "pattern": "^[a-z]{2,3}(-[A-Za-z0-9]{2,8})*$"
+      }
+    },
+    "personaStyle": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "length": {
+          "enum": [
+            "terse",
+            "short",
+            "medium",
+            "long"
+          ]
+        },
+        "typos": {
+          "enum": [
+            "none",
+            "some",
+            "many"
+          ]
+        },
+        "emoji": {
+          "enum": [
+            "none",
+            "some",
+            "many"
+          ]
+        },
+        "impatience": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 3
+        },
+        "formality": {
+          "enum": [
+            "casual",
+            "neutral",
+            "formal"
+          ]
+        },
+        "notes": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}

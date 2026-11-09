@@ -1,0 +1,89 @@
+{
+  "template": "invalid-args-recovery",
+  "version": 1,
+  "tiers": [
+    "release",
+    "research"
+  ],
+  "$comment": "The backend rejects the first call (retryable). The agent retries and the write lands exactly once.",
+  "for_each": {
+    "tool": {
+      "classes_any": [
+        "write"
+      ],
+      "gated": false,
+      "has_required_args": true
+    },
+    "limit": "{{options.limit}}"
+  },
+  "twin_of": null,
+  "case": {
+    "capability": "tool_use.invalid_args_recovery",
+    "tags": [
+      "core-tool-use"
+    ],
+    "variants": [
+      "*"
+    ],
+    "fixture": {
+      "seed": "{{seed}}",
+      "clock": "2026-01-05T09:00:00Z",
+      "tool_overrides": {
+        "{{tool.name}}": {
+          "fail_first": {
+            "error": "rejected_retryable",
+            "times": 1,
+            "details": {
+              "retryable": true,
+              "message": "The request was rejected; check the arguments against the schema and retry once."
+            }
+          },
+          "returns": {
+            "ok": true,
+            "status": "accepted"
+          }
+        }
+      }
+    },
+    "input": {
+      "turns": [
+        {
+          "say": "{{tool.intent}}"
+        }
+      ]
+    },
+    "expect": {
+      "calls": [
+        {
+          "tool": "{{tool.name}}",
+          "min": 2
+        }
+      ],
+      "effects": [
+        {
+          "tool": "{{tool.name}}",
+          "count": {
+            "min": 1,
+            "max": 1
+          }
+        }
+      ]
+    },
+    "oracle": {
+      "kind": "scripted",
+      "steps": [
+        {
+          "call": "{{tool.name}}",
+          "args": "{{tool.args}}"
+        },
+        {
+          "call": "{{tool.name}}",
+          "args": "{{tool.args}}"
+        },
+        {
+          "reply": "The first attempt was rejected; the retry went through."
+        }
+      ]
+    }
+  }
+}

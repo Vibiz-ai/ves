@@ -1,0 +1,83 @@
+{
+  "template": "read-then-write",
+  "version": 1,
+  "tiers": [
+    "release",
+    "research"
+  ],
+  "$comment": "Two steps in order: look up first, then write with the requested args.",
+  "for_each": {
+    "source": {
+      "classes_any": [
+        "read"
+      ]
+    },
+    "target": {
+      "classes_any": [
+        "write"
+      ],
+      "gated": false
+    },
+    "limit": "{{options.limit}}"
+  },
+  "twin_of": null,
+  "case": {
+    "capability": "tool_use.read_then_write",
+    "tags": [
+      "core-tool-use"
+    ],
+    "variants": [
+      "*"
+    ],
+    "fixture": {
+      "seed": "{{seed}}",
+      "clock": "2026-01-05T09:00:00Z",
+      "tool_overrides": {
+        "{{target.name}}": {
+          "returns": {
+            "ok": true,
+            "status": "accepted"
+          }
+        }
+      }
+    },
+    "input": {
+      "turns": [
+        {
+          "say": "{{source.intent}} After that, {{target.intent}}"
+        }
+      ]
+    },
+    "expect": {
+      "calls": [
+        {
+          "tool": "{{source.name}}",
+          "order": 0,
+          "min": 1
+        },
+        {
+          "tool": "{{target.name}}",
+          "args": "{{target.args}}",
+          "order": 1,
+          "min": 1
+        }
+      ]
+    },
+    "oracle": {
+      "kind": "scripted",
+      "steps": [
+        {
+          "call": "{{source.name}}",
+          "args": "{{source.args}}"
+        },
+        {
+          "call": "{{target.name}}",
+          "args": "{{target.args}}"
+        },
+        {
+          "reply": "Done: I looked it up first and then made the change."
+        }
+      ]
+    }
+  }
+}

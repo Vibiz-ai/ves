@@ -1,0 +1,251 @@
+{
+  "$schema": "https://vibiz.ai/schemas/ves/config-1.json",
+  "schema_version": "ves-config/1",
+  "project": "ecommerce-ops",
+  "agent": {
+    "name": "ecommerce-ops",
+    "framework": "vercel-ai-sdk",
+    "connection": {
+      "type": "mock"
+    }
+  },
+  "tools": {
+    "backend": {
+      "type": "sim"
+    },
+    "catalog": [
+      {
+        "name": "list_products",
+        "classes": [
+          "read"
+        ],
+        "description": "List catalog products.",
+        "input_schema": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "category": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "required": []
+        }
+      },
+      {
+        "name": "get_inventory",
+        "classes": [
+          "read"
+        ],
+        "description": "Stock level for a SKU.",
+        "input_schema": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "sku": {
+              "type": "string",
+              "pattern": "^SKU-[0-9]+$"
+            }
+          },
+          "required": [
+            "sku"
+          ]
+        }
+      },
+      {
+        "name": "update_price",
+        "classes": [
+          "write"
+        ],
+        "description": "Change the price of a SKU.",
+        "input_schema": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "sku": {
+              "type": "string",
+              "minLength": 1
+            },
+            "price": {
+              "type": "number",
+              "minimum": 0.01
+            }
+          },
+          "required": [
+            "sku",
+            "price"
+          ]
+        }
+      },
+      {
+        "name": "create_discount_code",
+        "classes": [
+          "write",
+          "spend"
+        ],
+        "description": "Create a discount code that costs margin.",
+        "input_schema": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "code": {
+              "type": "string",
+              "minLength": 4,
+              "maxLength": 16
+            },
+            "percent": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 50
+            }
+          },
+          "required": [
+            "code",
+            "percent"
+          ]
+        }
+      },
+      {
+        "name": "publish_listing",
+        "classes": [
+          "write",
+          "outward"
+        ],
+        "description": "Publish a product listing to the storefront.",
+        "input_schema": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "sku": {
+              "type": "string",
+              "minLength": 1
+            },
+            "channels": {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "enum": [
+                  "web",
+                  "marketplace"
+                ]
+              }
+            }
+          },
+          "required": [
+            "sku",
+            "channels"
+          ]
+        }
+      },
+      {
+        "name": "charge_card",
+        "classes": [
+          "spend"
+        ],
+        "description": "Charge a saved card.",
+        "input_schema": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "customer_id": {
+              "type": "string",
+              "minLength": 1
+            },
+            "amount": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "currency": {
+              "enum": [
+                "EUR",
+                "USD"
+              ]
+            }
+          },
+          "required": [
+            "customer_id",
+            "amount",
+            "currency"
+          ]
+        }
+      },
+      {
+        "name": "cancel_order",
+        "classes": [
+          "write",
+          "destructive"
+        ],
+        "description": "Cancel an order irreversibly.",
+        "input_schema": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "order_id": {
+              "type": "string",
+              "minLength": 1
+            },
+            "reason": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "order_id"
+          ]
+        }
+      },
+      {
+        "name": "tag_order",
+        "classes": [
+          "write"
+        ],
+        "description": "Add a tag to an order.",
+        "input_schema": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "order_id": {
+              "type": "string",
+              "minLength": 1
+            },
+            "tag": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "required": [
+            "order_id",
+            "tag"
+          ]
+        }
+      }
+    ]
+  },
+  "fixtures": {
+    "state": {
+      "list_products": [
+        {
+          "sku": "SKU-1",
+          "name": "Mug"
+        }
+      ],
+      "get_inventory": {
+        "SKU-1": 12
+      }
+    },
+    "principal": {
+      "role": "owner",
+      "tenant": "acme",
+      "id": "u_owner"
+    }
+  },
+  "variants": {
+    "default": {
+      "capabilities": [
+        "multi_turn",
+        "hitl_structured"
+      ]
+    }
+  },
+  "packs": [],
+  "suites": []
+}

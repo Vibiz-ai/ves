@@ -1,0 +1,53 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  harness:
+    name: Harness (Node ${{ matrix.node }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        node: ['22.18', '24']
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+      - name: Install, test, typecheck
+        run: npm ci && npm test && npm run typecheck
+      - name: Validate the bundled examples (strict, offline)
+        run: |
+          node src/cli.ts validate --config examples/plain-node/ves.config.json --strict
+          node src/cli.ts validate --config examples/personas/ves.config.json --strict
+      - name: Mock smoke run (offline, no secrets)
+        run: |
+          node src/cli.ts run --config examples/plain-node/ves.config.json --tier smoke --connection mock --out results
+          node src/cli.ts run --config examples/personas/ves.config.json --tier smoke --connection mock --out results
+          node src/cli.ts run --profile vibiz --tier release --connection mock --out results
+      - name: Runnable examples
+        run: node examples/run-all.mjs
+
+  ui:
+    name: Dashboard
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ui
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22.18'
+          cache: npm
+          cache-dependency-path: ui/package-lock.json
+      - run: npm ci
+      - run: npm test
+      - run: npm run build

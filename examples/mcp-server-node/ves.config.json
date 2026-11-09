@@ -1,0 +1,150 @@
+{
+  "$schema": "https://vibiz.ai/schemas/ves/config-1.json",
+  "schema_version": "ves-config/1",
+  "project": "acme-mcp-server",
+  "agent": {
+    "name": "acme-mcp-server",
+    "framework": "mcp-server",
+    "connection": {
+      "type": "mcp",
+      "transport": "http",
+      "url": "http://127.0.0.1:3100/mcp",
+      "headers": {
+        "authorization": "Bearer ${MCP_TEST_TOKEN}"
+      },
+      "protocol": "2025-06-18",
+      "client_info": "ves",
+      "mode": "contract",
+      "ledger": {
+        "url": "http://127.0.0.1:3100/log"
+      },
+      "approval": {
+        "tool": "approve_action",
+        "args": {
+          "pending_id": "{{guard.body.review.pending_id}}"
+        }
+      }
+    }
+  },
+  "tools": {
+    "$comment": "Schemas come from the server's tools/list; you assign the classes (gating is decided by classes, never by MCP annotations).",
+    "backend": {
+      "type": "sim"
+    },
+    "schemas_from": "mcp",
+    "catalog": [
+      {
+        "name": "search_tickets",
+        "classes": [
+          "read"
+        ],
+        "review": "confirmed"
+      },
+      {
+        "name": "get_customer",
+        "classes": [
+          "read"
+        ],
+        "review": "confirmed"
+      },
+      {
+        "name": "list_orders",
+        "classes": [
+          "read"
+        ],
+        "review": "confirmed"
+      },
+      {
+        "name": "add_note",
+        "classes": [
+          "write"
+        ],
+        "review": "confirmed"
+      },
+      {
+        "name": "close_ticket",
+        "classes": [
+          "write"
+        ],
+        "review": "confirmed"
+      },
+      {
+        "name": "send_email",
+        "classes": [
+          "write",
+          "outward"
+        ],
+        "review": "confirmed"
+      },
+      {
+        "name": "issue_refund",
+        "classes": [
+          "write",
+          "spend"
+        ],
+        "review": "confirmed"
+      },
+      {
+        "name": "delete_customer",
+        "classes": [
+          "write",
+          "destructive"
+        ],
+        "review": "confirmed"
+      }
+    ]
+  },
+  "hitl": {
+    "mode": "auto",
+    "binding": "args"
+  },
+  "fixtures": {
+    "state": "../fixtures/support-desk.state.json",
+    "principal": {
+      "role": "owner",
+      "tenant": "acme",
+      "id": "u_owner"
+    }
+  },
+  "variants": {
+    "default": {
+      "role": "contract",
+      "capabilities": [
+        "rpc",
+        "hitl_structured"
+      ]
+    },
+    "host-sim": {
+      "role": "host-sim",
+      "explicit_only": true,
+      "connection": {
+        "mode": "host-sim",
+        "model": "host_sim"
+      },
+      "host": {
+        "family": "host-sim:gemini"
+      },
+      "capabilities": [
+        "multi_turn",
+        "hitl_structured"
+      ]
+    }
+  },
+  "packs": [
+    "mcp-conformance",
+    "hitl-approval"
+  ],
+  "suites": [],
+  "models": {
+    "default": {
+      "provider": "vertex",
+      "model": "google/gemini-3.8-flash",
+      "project": "${GOOGLE_CLOUD_PROJECT}",
+      "location": "global"
+    },
+    "judge": "default",
+    "user_simulator": "default",
+    "host_sim": "default",
+    "intent_writer": "default"
+  }
+}

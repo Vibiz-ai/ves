@@ -1,0 +1,85 @@
+{
+  "schema_version": "ves-case/1",
+  "id": "smoke.create-ad-image",
+  "version": 1,
+  "capability": "creative.generate_image",
+  "suite": "smoke",
+  "tags": [
+    "create"
+  ],
+  "family": "both",
+  "surfaces": [
+    "eve/*",
+    "gateway/claude-sim"
+  ],
+  "owner": "eval-lead",
+  "provenance": {
+    "author": "engineer (VES-1 reference impl)",
+    "created": "2026-11-06",
+    "source": "migrated",
+    "source_ref": "the agent's earlier eval suite (create-ad-image)"
+  },
+  "fixture": {
+    "sim_org": "lumen-yoga",
+    "fixture_sha256": "deacb0476d15b8e967cf544d48c8cfb96a640460471ca42d5a876e70203951e8",
+    "seed": 103,
+    "clock": "2026-10-20T09:00:00Z"
+  },
+  "input": {
+    "turns": [
+      {
+        "say": "Make an ad for the intro offer."
+      }
+    ]
+  },
+  "expect": {
+    "calls": [
+      {
+        "tool": "creative.generate_image",
+        "min": 1,
+        "max": 3
+      }
+    ],
+    "side_effects": [
+      {
+        "kind": "credits_debited",
+        "count": {
+          "min": 1,
+          "max": 3
+        }
+      }
+    ]
+  },
+  "graders": [
+    {
+      "id": "call_match",
+      "role": "gate"
+    },
+    {
+      "id": "side_effects",
+      "role": "gate"
+    },
+    {
+      "id": "credits_metering",
+      "role": "advisory",
+      "params": {
+        "max_debits": 3
+      }
+    }
+  ],
+  "oracle": {
+    "kind": "scripted",
+    "steps": [
+      {
+        "call": "creative.generate_image",
+        "args": {
+          "offer": "New Student Intro",
+          "style": "real studio photo"
+        }
+      },
+      {
+        "reply": "I made an ad for the intro offer (3 classes for €25) from a real studio photo."
+      }
+    ]
+  }
+}

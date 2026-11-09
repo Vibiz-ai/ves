@@ -1,0 +1,492 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://vibiz.ai/schemas/ves/run-2.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "run_id",
+    "ves_version",
+    "tier",
+    "trigger",
+    "target",
+    "harness",
+    "suite",
+    "surfaces",
+    "adapters",
+    "judge_config",
+    "k",
+    "seeds",
+    "cost",
+    "status",
+    "config_sha256",
+    "catalog_sha256",
+    "packs",
+    "connections",
+    "observation",
+    "conformance",
+    "loosened"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "ves-run/2"
+    },
+    "run_id": {
+      "type": "string"
+    },
+    "ves_version": {
+      "type": "string",
+      "pattern": "^1\\.[0-9]+\\.[0-9]+$"
+    },
+    "tier": {
+      "enum": [
+        "smoke",
+        "release",
+        "research"
+      ]
+    },
+    "trigger": {
+      "enum": [
+        "deploy",
+        "pre_release",
+        "nightly",
+        "canary",
+        "research",
+        "manual",
+        "pr"
+      ]
+    },
+    "target": {
+      "type": "object",
+      "required": [
+        "sha",
+        "deploy_targets"
+      ],
+      "properties": {
+        "sha": {
+          "type": "string"
+        },
+        "branch": {
+          "type": "string"
+        },
+        "deploy_targets": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "change_class": {
+          "enum": [
+            0,
+            1,
+            2,
+            3
+          ]
+        }
+      }
+    },
+    "harness": {
+      "type": "object",
+      "required": [
+        "evals_sha",
+        "package_version"
+      ],
+      "properties": {
+        "evals_sha": {
+          "type": "string"
+        },
+        "package_version": {
+          "type": "string"
+        },
+        "semconv_commit": {
+          "type": "string"
+        },
+        "conformance_version": {
+          "type": "string"
+        },
+        "source": {
+          "enum": [
+            "action",
+            "repo",
+            "local"
+          ]
+        }
+      }
+    },
+    "suite": {
+      "type": "object",
+      "required": [
+        "ids",
+        "version",
+        "case_count"
+      ],
+      "properties": {
+        "ids": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "version": {
+          "type": "string"
+        },
+        "case_count": {
+          "type": "integer"
+        },
+        "fixture_sha256s": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "surfaces": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "adapters": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "surface",
+          "version",
+          "routes_sha256",
+          "diffs_from_prod"
+        ],
+        "properties": {
+          "surface": {
+            "type": "string"
+          },
+          "version": {
+            "type": "string"
+          },
+          "routes_sha256": {
+            "type": "string"
+          },
+          "diffs_from_prod": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "judge_config": {
+      "type": "object",
+      "required": [
+        "model",
+        "prompts"
+      ],
+      "properties": {
+        "model": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "prompts": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "user_simulator": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "properties": {
+        "model": {
+          "type": "string"
+        },
+        "prompt_sha256": {
+          "type": "string"
+        }
+      }
+    },
+    "k": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "integer"
+      }
+    },
+    "seeds": {
+      "type": "object",
+      "properties": {
+        "bootstrap": {
+          "type": "integer"
+        },
+        "cache_salt": {
+          "type": "string"
+        }
+      }
+    },
+    "comparator": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "required": [
+        "run_id",
+        "sha",
+        "differs_in"
+      ],
+      "properties": {
+        "run_id": {
+          "type": "string"
+        },
+        "sha": {
+          "type": "string"
+        },
+        "differs_in": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "anchor_run_id": {
+          "type": "string"
+        }
+      }
+    },
+    "cost": {
+      "type": "object",
+      "required": [
+        "pool",
+        "estimate_point_usd",
+        "estimate_high_usd",
+        "actual_usd"
+      ],
+      "properties": {
+        "pool": {
+          "enum": [
+            "smoke",
+            "release",
+            "research",
+            "canary"
+          ]
+        },
+        "estimate_point_usd": {
+          "type": "number"
+        },
+        "estimate_high_usd": {
+          "type": "number"
+        },
+        "actual_usd": {
+          "type": "number"
+        },
+        "wall_s": {
+          "type": "number"
+        }
+      }
+    },
+    "block_card": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "Required for tier=research."
+    },
+    "status": {
+      "enum": [
+        "running",
+        "valid",
+        "invalid"
+      ]
+    },
+    "invalid_row_share": {
+      "type": "number"
+    },
+    "verdict": {
+      "enum": [
+        "PASS",
+        "BLOCK",
+        "INVALID",
+        "REPORT_ONLY"
+      ]
+    },
+    "project": {
+      "type": "string"
+    },
+    "config_sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "catalog_sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "packs": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "version",
+          "sha256",
+          "cases"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "version": {
+            "type": "string"
+          },
+          "sha256": {
+            "type": "string"
+          },
+          "cases": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "skipped": {
+            "type": "string"
+          },
+          "low_realism_intents": {
+            "type": "integer",
+            "minimum": 0
+          }
+        }
+      }
+    },
+    "connections": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "required": [
+          "kind",
+          "version",
+          "agent"
+        ],
+        "properties": {
+          "kind": {
+            "type": "string"
+          },
+          "version": {
+            "type": "string"
+          },
+          "role": {
+            "type": "string"
+          },
+          "agent": {
+            "type": "object",
+            "required": [
+              "name"
+            ],
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "framework": {
+                "type": "string"
+              },
+              "model": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    },
+    "observation": {
+      "type": "object",
+      "additionalProperties": {
+        "enum": [
+          "ledger",
+          "proxied",
+          "traced",
+          "reported"
+        ]
+      }
+    },
+    "conformance": {
+      "enum": [
+        "VES-1",
+        "custom"
+      ]
+    },
+    "loosened": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "notes": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "baseline": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "required": [
+        "source",
+        "run_id",
+        "sha"
+      ],
+      "properties": {
+        "source": {
+          "enum": [
+            "artifact",
+            "run-base",
+            "path"
+          ],
+          "description": "artifact = main's last run artifact; run-base = the base agent re-run in this job (doubles cost); path = given by --baseline"
+        },
+        "run_id": {
+          "type": "string"
+        },
+        "sha": {
+          "type": "string"
+        }
+      }
+    },
+    "new_cases": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "report_only": {
+      "type": "boolean"
+    },
+    "models": {
+      "type": "object",
+      "description": "Models package: spend ledger summary (harness model calls; agent-reported spend is charged into the same cap), warnings (G-1 family clash, unpriced models) and the identity (model, prompt sha) of every judge / simulator / intent writer used.",
+      "properties": {
+        "ledger": {
+          "type": "object"
+        },
+        "warnings": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "identities": {
+          "type": "object"
+        }
+      }
+    },
+    "trace_cases": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Cases graded from a recorded trace (input.trace): no baseline arms replay them, so they are outside the suite-validity controls."
+    }
+  },
+  "title": "VES run manifest v2 (run-1 plus DESIGN-agnostic §3.7 deltas)"
+}

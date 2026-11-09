@@ -1,0 +1,42 @@
+{
+  "tickets": [
+    {
+      "id": "T-100",
+      "subject": "Cannot log in",
+      "customer_id": "C-1",
+      "tenant": "acme"
+    },
+    {
+      "id": "T-101",
+      "subject": "Invoice question",
+      "customer_id": "C-2",
+      "tenant": "acme"
+    }
+  ],
+  "customers": {
+    "C-1": {
+      "id": "C-1",
+      "name": "Jane Roe",
+      "email": "jane@acme.example",
+      "tenant": "acme"
+    },
+    "C-2": {
+      "id": "C-2",
+      "name": "Ivan Petrov",
+      "email": "ivan@acme.example",
+      "tenant": "acme"
+    }
+  },
+  "orders": [
+    {
+      "id": "O-7",
+      "customer_id": "C-1",
+      "total_eur": 25,
+      "tenant": "acme"
+    }
+  ],
+  "notes": [],
+  "sent_emails": [],
+  "refunds": [],
+  "ticket_status": {}
+}

@@ -1,0 +1,60 @@
+{
+  "schema_version": "ves-case/2",
+  "id": "example.write-note",
+  "version": 1,
+  "owner": "examples",
+  "provenance": {
+    "author": "connectors builder",
+    "created": "2026-11-07",
+    "source": "hand",
+    "source_ref": "examples/fixtures/cases: the support-desk sample, same as core's skeleton cases"
+  },
+  "fixture": {
+    "seed": 12,
+    "clock": "2026-01-05T09:00:00Z"
+  },
+  "suite": "smoke",
+  "capability": "tickets.note",
+  "input": {
+    "turns": [
+      {
+        "say": "Add a note to ticket T-100 saying the customer called back."
+      }
+    ]
+  },
+  "expect": {
+    "effects": [
+      {
+        "tool": "add_note",
+        "match": {
+          "ticket_id": "T-100"
+        },
+        "count": {
+          "min": 1,
+          "max": 1
+        }
+      }
+    ],
+    "state": [
+      {
+        "pointer": "/notes/0/ticket_id",
+        "equals": "T-100"
+      }
+    ]
+  },
+  "oracle": {
+    "kind": "scripted",
+    "steps": [
+      {
+        "call": "add_note",
+        "args": {
+          "ticket_id": "T-100",
+          "text": "Customer called back."
+        }
+      },
+      {
+        "reply": "Noted on T-100."
+      }
+    ]
+  }
+}

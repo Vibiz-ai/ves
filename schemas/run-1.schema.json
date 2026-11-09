@@ -1,0 +1,313 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://vibiz.ai/schemas/ves/run-1.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "run_id",
+    "ves_version",
+    "tier",
+    "trigger",
+    "target",
+    "harness",
+    "suite",
+    "surfaces",
+    "adapters",
+    "judge_config",
+    "k",
+    "seeds",
+    "cost",
+    "status"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "ves-run/1"
+    },
+    "run_id": {
+      "type": "string"
+    },
+    "ves_version": {
+      "type": "string",
+      "pattern": "^1\\.[0-9]+\\.[0-9]+$"
+    },
+    "tier": {
+      "enum": [
+        "smoke",
+        "release",
+        "research"
+      ]
+    },
+    "trigger": {
+      "enum": [
+        "deploy",
+        "pre_release",
+        "nightly",
+        "canary",
+        "research",
+        "manual"
+      ]
+    },
+    "target": {
+      "type": "object",
+      "required": [
+        "sha",
+        "deploy_targets"
+      ],
+      "properties": {
+        "sha": {
+          "type": "string"
+        },
+        "branch": {
+          "type": "string"
+        },
+        "deploy_targets": {
+          "type": "array",
+          "items": {
+            "enum": [
+              "app",
+              "agent",
+              "gateway",
+              "ios"
+            ]
+          }
+        },
+        "change_class": {
+          "enum": [
+            0,
+            1,
+            2,
+            3
+          ]
+        }
+      }
+    },
+    "harness": {
+      "type": "object",
+      "required": [
+        "evals_sha",
+        "package_version"
+      ],
+      "properties": {
+        "evals_sha": {
+          "type": "string"
+        },
+        "package_version": {
+          "type": "string"
+        },
+        "semconv_commit": {
+          "type": "string"
+        },
+        "conformance_version": {
+          "type": "string"
+        }
+      }
+    },
+    "suite": {
+      "type": "object",
+      "required": [
+        "ids",
+        "version",
+        "case_count"
+      ],
+      "properties": {
+        "ids": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "version": {
+          "type": "string"
+        },
+        "case_count": {
+          "type": "integer"
+        },
+        "fixture_sha256s": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "surfaces": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "adapters": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "surface",
+          "version",
+          "routes_sha256",
+          "diffs_from_prod"
+        ],
+        "properties": {
+          "surface": {
+            "type": "string"
+          },
+          "version": {
+            "type": "string"
+          },
+          "routes_sha256": {
+            "type": "string"
+          },
+          "diffs_from_prod": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "judge_config": {
+      "type": "object",
+      "required": [
+        "model",
+        "prompts"
+      ],
+      "properties": {
+        "model": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "prompts": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "user_simulator": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "properties": {
+        "model": {
+          "type": "string"
+        },
+        "prompt_sha256": {
+          "type": "string"
+        }
+      }
+    },
+    "k": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "integer"
+      }
+    },
+    "seeds": {
+      "type": "object",
+      "properties": {
+        "bootstrap": {
+          "type": "integer"
+        },
+        "cache_salt": {
+          "type": "string"
+        }
+      }
+    },
+    "comparator": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "required": [
+        "run_id",
+        "sha",
+        "differs_in"
+      ],
+      "properties": {
+        "run_id": {
+          "type": "string"
+        },
+        "sha": {
+          "type": "string"
+        },
+        "differs_in": {
+          "type": "array",
+          "items": {
+            "enum": [
+              "agent_commit",
+              "model",
+              "prompt",
+              "catalog",
+              "toolset",
+              "host_model"
+            ]
+          }
+        },
+        "anchor_run_id": {
+          "type": "string"
+        }
+      }
+    },
+    "cost": {
+      "type": "object",
+      "required": [
+        "pool",
+        "estimate_point_usd",
+        "estimate_high_usd",
+        "actual_usd"
+      ],
+      "properties": {
+        "pool": {
+          "enum": [
+            "smoke",
+            "release",
+            "research",
+            "canary"
+          ]
+        },
+        "estimate_point_usd": {
+          "type": "number"
+        },
+        "estimate_high_usd": {
+          "type": "number"
+        },
+        "actual_usd": {
+          "type": "number"
+        },
+        "wall_s": {
+          "type": "number"
+        }
+      }
+    },
+    "block_card": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "Required for tier=research."
+    },
+    "status": {
+      "enum": [
+        "running",
+        "valid",
+        "invalid"
+      ]
+    },
+    "invalid_row_share": {
+      "type": "number"
+    },
+    "verdict": {
+      "enum": [
+        "PASS",
+        "BLOCK",
+        "INVALID",
+        "REPORT_ONLY"
+      ]
+    }
+  }
+}

@@ -1,0 +1,52 @@
+{
+  "template": "write-direct",
+  "version": 1,
+  "for_each": {
+    "tool": {
+      "classes_any": [
+        "write"
+      ],
+      "gated": false
+    },
+    "limit": 2
+  },
+  "case": {
+    "suite": "regression",
+    "capability": "skeleton.write",
+    "fixture": {
+      "seed": "{{seed}}",
+      "clock": "2026-01-05T09:00:00Z"
+    },
+    "input": {
+      "turns": [
+        {
+          "say": "{{tool.intent}}"
+        }
+      ]
+    },
+    "expect": {
+      "effects": [
+        {
+          "tool": "{{tool.name}}",
+          "match": "{{tool.args}}",
+          "count": {
+            "min": 1,
+            "max": 1
+          }
+        }
+      ]
+    },
+    "oracle": {
+      "kind": "scripted",
+      "steps": [
+        {
+          "call": "{{tool.name}}",
+          "args": "{{tool.args}}"
+        },
+        {
+          "reply": "Done."
+        }
+      ]
+    }
+  }
+}

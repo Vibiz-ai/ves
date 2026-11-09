@@ -1,0 +1,31 @@
+{
+  "name": "ves-ui",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Read-only local dashboard for VES eval results.",
+  "type": "module",
+  "engines": { "node": ">=22" },
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit -p tsconfig.json && vite build",
+    "start": "npm run build && node server/index.mjs",
+    "serve": "node server/index.mjs",
+    "test": "node --test test/*.test.ts test/*.test.mjs",
+    "typecheck": "tsc --noEmit -p tsconfig.json"
+  },
+  "dependencies": {
+    "@tabler/icons-react": "^3.35.0",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0"
+  },
+  "devDependencies": {
+    "@tailwindcss/vite": "^4.1.13",
+    "@types/node": "^22.18.0",
+    "@types/react": "^19.1.0",
+    "@types/react-dom": "^19.1.0",
+    "@vitejs/plugin-react": "^5.0.0",
+    "tailwindcss": "^4.1.13",
+    "typescript": "^5.9.2",
+    "vite": "^7.1.0"
+  }
+}

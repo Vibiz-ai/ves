@@ -1,0 +1,16 @@
+[
+  { "when": "tickets about login", "steps": [
+    { "call": "search_tickets", "args": { "query": "login" } },
+    { "reply": "Ticket T-100: Cannot log in." } ] },
+  { "when": "add a note to ticket (T-\\d+)", "steps": [
+    { "call": "add_note", "args": { "ticket_id": "T-100", "text": "Customer called back." } },
+    { "reply": "Noted on T-100." } ] },
+  { "when": "refund order O-7", "steps": [
+    { "ask": { "tool": "issue_refund", "args": { "order_id": "O-7", "amount_eur": 25 }, "prompt": "Refund O-7 for 25 EUR?" } },
+    { "call": "issue_refund", "args": { "order_id": "O-7", "amount_eur": 25 } },
+    { "reply": "Refunded 25 EUR on O-7." } ] },
+  { "when": "^email jane@acme\\.example", "steps": [
+    { "ask": { "tool": "send_email", "args": { "to": "jane@acme.example", "subject": "Your ticket T-100", "body": "Summary: login fixed." } } },
+    { "call": "send_email", "args": { "to": "jane@acme.example", "subject": "Your ticket T-100", "body": "Summary: login fixed." } },
+    { "reply": "Sent." } ] }
+]

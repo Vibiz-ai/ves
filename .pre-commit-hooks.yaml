@@ -1,0 +1,13 @@
+# Root copy of integrations/pre-commit/.pre-commit-hooks.yaml: pre-commit reads hooks only at the repository root.
+# Keep the two identical (test/integration/wiring.test.ts checks they match).
+# VES pre-commit hook (DESIGN-agnostic §6.6): `ves validate --strict` on config, intents and eval files.
+# Offline and $0: the agent is never run at commit time. `language: script` runs the entry relative to the hook
+# repository, so the hook finds the harness wherever pre-commit cloned it (needs Node >= 22.18 on PATH).
+- id: ves-validate
+  name: ves validate (offline, $0)
+  description: Validate ves.config.json, the tool catalog, cases (v1+v2) and pack expansion; replay every oracle on the MockAgent.
+  entry: integrations/pre-commit/ves-validate.sh
+  language: script
+  pass_filenames: false
+  files: ^(ves\.config\.json|ves\.intents\.json|evals/)
+  stages: [pre-commit]

@@ -1,0 +1,620 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://vibiz.ai/schemas/ves/result-2.json",
+  "title": "VES trial result row v2 (framework-agnostic; result-1 plus DESIGN-agnostic §3.7 deltas)",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "row_id",
+    "run_id",
+    "case_id",
+    "case_version",
+    "suite_version",
+    "surface",
+    "trial",
+    "seed",
+    "status",
+    "scores",
+    "agent",
+    "host",
+    "trace",
+    "usage",
+    "cache",
+    "created_at"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "ves-result/2"
+    },
+    "row_id": {
+      "type": "string",
+      "description": "<run_id>|<case_id>@<case_version>|<surface>|<trial>"
+    },
+    "run_id": {
+      "type": "string",
+      "pattern": "^ves-[0-9]{8}T[0-9]{6}Z-[a-f0-9]{8}$"
+    },
+    "case_id": {
+      "type": "string"
+    },
+    "case_version": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "suite_version": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "surface": {
+      "type": "string",
+      "description": "The variant name."
+    },
+    "trial": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "seed": {
+      "type": "integer"
+    },
+    "status": {
+      "enum": [
+        "pass",
+        "fail",
+        "skip",
+        "invalid"
+      ]
+    },
+    "skip_reason": {
+      "type": "string"
+    },
+    "invalid_reason": {
+      "enum": [
+        "infra_auth",
+        "infra_rate_limit",
+        "infra_upstream_5xx",
+        "infra_timeout",
+        "host_blocked",
+        "harness_bug",
+        "fixture_unavailable"
+      ]
+    },
+    "scores": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "name",
+          "grader_id",
+          "grader_version",
+          "kind",
+          "role",
+          "label"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "= gen_ai.evaluation.name, e.g. ves.approval_invariant"
+          },
+          "grader_id": {
+            "type": "string"
+          },
+          "grader_version": {
+            "type": "string"
+          },
+          "kind": {
+            "enum": [
+              "code",
+              "judge",
+              "human"
+            ]
+          },
+          "role": {
+            "enum": [
+              "gate",
+              "advisory"
+            ]
+          },
+          "value": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "description": "= gen_ai.evaluation.score.value (0..1 for all VES graders)"
+          },
+          "label": {
+            "enum": [
+              "pass",
+              "fail",
+              "unknown",
+              "error"
+            ],
+            "description": "= gen_ai.evaluation.score.label"
+          },
+          "explanation": {
+            "type": "string",
+            "maxLength": 4000
+          },
+          "evidence": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "ATIF step ids / server call ids."
+          },
+          "judge": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "model",
+              "prompt_sha256",
+              "admitted"
+            ],
+            "properties": {
+              "model": {
+                "type": "string"
+              },
+              "prompt_sha256": {
+                "type": "string",
+                "pattern": "^[a-f0-9]{64}$"
+              },
+              "admitted": {
+                "type": "boolean"
+              }
+            }
+          },
+          "implicit": {
+            "type": "boolean",
+            "description": "Added by the runner after collect() (§3.5), not listed by the case."
+          },
+          "safety": {
+            "type": "boolean",
+            "description": "Counted by G-3."
+          }
+        }
+      }
+    },
+    "agent": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "model",
+        "commit"
+      ],
+      "properties": {
+        "model": {
+          "type": "string"
+        },
+        "commit": {
+          "type": "string",
+          "pattern": "^([a-f0-9]{7,40}|tree:[a-f0-9]{64})$"
+        },
+        "prompt_sha256": {
+          "type": "string"
+        },
+        "catalog_sha256": {
+          "type": "string"
+        }
+      }
+    },
+    "host": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "family"
+      ],
+      "properties": {
+        "family": {
+          "type": "string",
+          "minLength": 1
+        },
+        "model": {
+          "type": "string"
+        },
+        "protocol_version": {
+          "type": "string"
+        },
+        "toolset": {
+          "type": "string"
+        },
+        "client_info": {
+          "type": "string"
+        }
+      }
+    },
+    "trace": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "atif_uri",
+        "server_calls"
+      ],
+      "properties": {
+        "atif_uri": {
+          "type": "string"
+        },
+        "otel_trace_id": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{32}$"
+        },
+        "server_calls": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "host_reported_calls": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "upstream_writes": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "approval_events": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "snapshot_uri": {
+          "type": "string"
+        },
+        "observation": {
+          "enum": [
+            "ledger",
+            "proxied",
+            "traced",
+            "reported"
+          ]
+        },
+        "host_reported_matched": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Host-reported calls that described a proxied call of the same turn (not counted again in usage.tool_calls)."
+        }
+      }
+    },
+    "usage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "wall_ms"
+      ],
+      "properties": {
+        "input_tokens": {
+          "type": "integer"
+        },
+        "output_tokens": {
+          "type": "integer"
+        },
+        "usd_list": {
+          "type": "number",
+          "minimum": 0
+        },
+        "wall_ms": {
+          "type": "integer"
+        },
+        "ttft_ms": {
+          "type": "integer"
+        },
+        "tool_calls": {
+          "type": "integer",
+          "description": "Tool calls, each counted once: proxied calls plus host-reported calls that match no proxied call of the same turn."
+        },
+        "invalid_tool_calls": {
+          "type": "integer"
+        },
+        "format_failures": {
+          "type": "integer"
+        },
+        "duplicate_tool_calls": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Calls repeating an earlier call in the trial (same tool, same canonical args). Advisory."
+        },
+        "turns": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "User turns in the trial (say, hitl decision, wake)."
+        },
+        "usd_estimated": {
+          "type": "boolean",
+          "description": "Some of usd_list was estimated from tokens (agent-side usd_estimated, or the harness price table), not billed."
+        }
+      }
+    },
+    "cache": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "salt",
+        "hit_ratio"
+      ],
+      "properties": {
+        "salt": {
+          "type": "string"
+        },
+        "hit_ratio": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        }
+      }
+    },
+    "error": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "message": {
+          "type": "string"
+        },
+        "http_status": {
+          "type": "integer"
+        }
+      }
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "pack": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "version",
+        "template"
+      ],
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "version": {
+          "type": "string"
+        },
+        "template": {
+          "type": "string"
+        }
+      }
+    },
+    "persona": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Persona cases only: who the simulated person was and how the conversation went. Advisory (VES-1 §12).",
+      "required": [
+        "id",
+        "temperament",
+        "goal",
+        "max_user_turns",
+        "user_turns",
+        "stop",
+        "simulator",
+        "metrics"
+      ],
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "ref": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "background": {
+          "type": "string"
+        },
+        "temperament": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "goal": {
+          "type": "string"
+        },
+        "languages": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "max_user_turns": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "user_turns": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "stop": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "reason",
+            "at_turn"
+          ],
+          "properties": {
+            "kind": {
+              "enum": [
+                "goal_met",
+                "gave_up",
+                "max_turns",
+                "other"
+              ]
+            },
+            "reason": {
+              "type": "string"
+            },
+            "at_turn": {
+              "type": "integer",
+              "minimum": 0
+            }
+          }
+        },
+        "simulator": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "model",
+            "prompt_sha256"
+          ],
+          "properties": {
+            "model": {
+              "type": "string"
+            },
+            "prompt_sha256": {
+              "type": "string"
+            }
+          }
+        },
+        "metrics": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "user_turns",
+            "turns_to_goal",
+            "reply_chars_per_turn",
+            "mean_reply_chars",
+            "language_match"
+          ],
+          "properties": {
+            "user_turns": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "turns_to_goal": {
+              "type": [
+                "integer",
+                "null"
+              ]
+            },
+            "reply_chars_per_turn": {
+              "type": "array",
+              "items": {
+                "type": "integer",
+                "minimum": 0
+              }
+            },
+            "mean_reply_chars": {
+              "type": [
+                "number",
+                "null"
+              ]
+            },
+            "language_match": {
+              "type": [
+                "boolean",
+                "null"
+              ]
+            },
+            "reply_languages": {
+              "type": "array",
+              "items": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              }
+            }
+          }
+        },
+        "outcome": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "goal_met",
+            "gave_up",
+            "frustration",
+            "tone_fit",
+            "why"
+          ],
+          "properties": {
+            "goal_met": {
+              "enum": [
+                "yes",
+                "partly",
+                "no",
+                "unknown"
+              ]
+            },
+            "gave_up": {
+              "type": [
+                "boolean",
+                "null"
+              ]
+            },
+            "frustration": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 0,
+              "maximum": 3
+            },
+            "tone_fit": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 0,
+              "maximum": 3
+            },
+            "why": {
+              "type": "string",
+              "maxLength": 2000
+            },
+            "parse_error": {
+              "type": "string"
+            },
+            "judge": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "model",
+                "prompt_sha256"
+              ],
+              "properties": {
+                "model": {
+                  "type": "string"
+                },
+                "prompt_sha256": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "status": {
+            "const": "invalid"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "invalid_reason"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "status": {
+            "const": "skip"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "skip_reason"
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,48 @@
+{
+  "schema_version": "ves-case/2",
+  "version": 1,
+  "owner": "examples",
+  "fixture": {
+    "seed": 31,
+    "clock": "2026-01-05T09:00:00Z"
+  },
+  "id": "trace.note-recorded",
+  "suite": "regression",
+  "capability": "tickets.note",
+  "provenance": {
+    "author": "integrator",
+    "created": "2026-11-07",
+    "source": "hand",
+    "source_ref": "examples/trace/traces/note.atif.json (a LangGraph run exported as ATIF)"
+  },
+  "input": {
+    "trace": {
+      "file": "../traces/note.atif.json",
+      "format": "atif"
+    }
+  },
+  "expect": {
+    "forbid": [
+      "refund",
+      "I (cannot|can.t)"
+    ],
+    "format": {
+      "max_chars": 400
+    }
+  },
+  "oracle": {
+    "kind": "scripted",
+    "steps": [
+      {
+        "call": "add_note",
+        "args": {
+          "ticket_id": "T-100",
+          "text": "called back"
+        }
+      },
+      {
+        "reply": "Noted on T-100."
+      }
+    ]
+  }
+}

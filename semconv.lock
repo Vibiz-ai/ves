@@ -1,0 +1,4 @@
+# STUB (STANDARD §2.2, §11.2). Pin the OpenTelemetry semantic-conventions commit that defines gen_ai.evaluation.result.
+# Not pinned yet: this workspace had no network access when the reference implementation was written.
+semconv_commit=UNPINNED
+attributes=gen_ai.evaluation.name,gen_ai.evaluation.score.value,gen_ai.evaluation.score.label,gen_ai.evaluation.explanation

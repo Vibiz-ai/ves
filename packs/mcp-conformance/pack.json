@@ -1,0 +1,11 @@
+{
+  "schema_version": "ves-pack/1",
+  "id": "mcp-conformance",
+  "version": "1.0.0",
+  "released": "2026-11-07",
+  "title": "MCP server conformance",
+  "purpose": "S0 contract checks for teams whose product is an MCP server: handshake, tools/list paging, tool schemas, annotations that do not contradict the catalog, error behaviour for unknown tools and missing args, read idempotence, gated tools refusing without approval, structured output. Model-free ($0); runs only on variants with role contract.",
+  "suite": "smoke",
+  "tags": ["mcp-conformance"],
+  "requires": { "variant_roles_any": ["contract"] }
+}

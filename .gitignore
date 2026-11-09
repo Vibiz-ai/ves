@@ -1,0 +1,26 @@
+# dependencies
+node_modules/
+ui/node_modules/
+
+# run outputs and local state (never commit: may contain model output and workspace data)
+results/
+!ui/test/fixtures/results/
+ves-results/
+.ves/
+.ves-cache/
+.scratch/
+.ves-ledger.jsonl
+protocol/sealed/*.txt
+
+# secrets
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# OS / editor
+.DS_Store
+
+# build output (rebuilt by `cd ui && npm run build`, shipped in the npm package)
+ui/dist/

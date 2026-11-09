@@ -1,0 +1,50 @@
+{
+  "schema_version": "ves-case/2",
+  "id": "skeleton.read-search",
+  "version": 1,
+  "owner": "core",
+  "provenance": {
+    "author": "core step",
+    "created": "2026-11-07",
+    "source": "hand",
+    "source_ref": "DESIGN-agnostic §7.1 item 11 skeleton cases"
+  },
+  "fixture": {
+    "seed": 11,
+    "clock": "2026-01-05T09:00:00Z"
+  },
+  "suite": "smoke",
+  "capability": "tickets.search",
+  "input": {
+    "turns": [
+      {
+        "say": "Find the tickets about login problems."
+      }
+    ]
+  },
+  "expect": {
+    "calls": [
+      {
+        "tool": "search_tickets",
+        "args": {
+          "query": "login"
+        },
+        "min": 1
+      }
+    ]
+  },
+  "oracle": {
+    "kind": "scripted",
+    "steps": [
+      {
+        "call": "search_tickets",
+        "args": {
+          "query": "login"
+        }
+      },
+      {
+        "reply": "Ticket T-100: Cannot log in."
+      }
+    ]
+  }
+}

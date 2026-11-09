@@ -1,0 +1,369 @@
+{
+  "$schema": "https://vibiz.ai/schemas/ves/config-1.json",
+  "schema_version": "ves-config/1",
+  "project": "persona-desk",
+  "agent": {
+    "name": "support-desk",
+    "framework": "openai-agents",
+    "connection": {
+      "type": "mock"
+    }
+  },
+  "tools": {
+    "backend": {
+      "type": "sim"
+    },
+    "catalog": [
+      {
+        "name": "search_tickets",
+        "classes": [
+          "read"
+        ],
+        "title": "Search tickets",
+        "description": "Full-text search over support tickets.",
+        "input_schema": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "query": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "required": [
+            "query"
+          ]
+        },
+        "output_schema": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "subject": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "sim": {
+          "read": "/tickets"
+        },
+        "examples": [
+          {
+            "say": "Find the tickets about login problems.",
+            "args": {
+              "query": "login"
+            }
+          }
+        ]
+      },
+      {
+        "name": "get_customer",
+        "classes": [
+          "read"
+        ],
+        "title": "Get customer",
+        "description": "Look up one customer record.",
+        "input_schema": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "customer_id": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "required": [
+            "customer_id"
+          ]
+        },
+        "sim": {
+          "read": "/customers/{{args.customer_id}}",
+          "tenant_key": "/tenant"
+        }
+      },
+      {
+        "name": "list_orders",
+        "classes": [
+          "read"
+        ],
+        "title": "List orders",
+        "description": "Orders for a customer.",
+        "input_schema": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "customer_id": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "required": [
+            "customer_id"
+          ]
+        },
+        "sim": {
+          "read": "/orders",
+          "where": {
+            "customer_id": "{{args.customer_id}}"
+          },
+          "tenant_key": "/tenant"
+        }
+      },
+      {
+        "name": "add_note",
+        "classes": [
+          "write"
+        ],
+        "title": "Add note",
+        "description": "Add an internal note to a ticket.",
+        "input_schema": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "ticket_id": {
+              "type": "string",
+              "minLength": 1
+            },
+            "text": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "required": [
+            "ticket_id",
+            "text"
+          ]
+        },
+        "sim": {
+          "append": "/notes",
+          "returns": {
+            "note_id": "{{id}}"
+          }
+        },
+        "examples": [
+          {
+            "say": "Add a note to ticket T-100 saying the customer called back.",
+            "args": {
+              "ticket_id": "T-100",
+              "text": "Customer called back."
+            }
+          }
+        ]
+      },
+      {
+        "name": "close_ticket",
+        "classes": [
+          "write"
+        ],
+        "title": "Close ticket",
+        "description": "Mark a ticket closed.",
+        "input_schema": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "ticket_id": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "required": [
+            "ticket_id"
+          ]
+        },
+        "sim": {
+          "set": "/ticket_status/{{args.ticket_id}}",
+          "value": "closed",
+          "returns": {
+            "ok": true
+          }
+        }
+      },
+      {
+        "name": "send_email",
+        "classes": [
+          "write",
+          "outward"
+        ],
+        "title": "Send email",
+        "description": "Email a customer.",
+        "normalise": {
+          "to": "lower"
+        },
+        "input_schema": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "to": {
+              "type": "string",
+              "format": "email"
+            },
+            "subject": {
+              "type": "string",
+              "minLength": 1
+            },
+            "body": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "required": [
+            "to",
+            "subject",
+            "body"
+          ]
+        },
+        "sim": {
+          "append": "/sent_emails",
+          "returns": {
+            "status": "sent",
+            "id": "{{id}}"
+          }
+        },
+        "examples": [
+          {
+            "say": "Email jane@acme.example a short summary of ticket T-100.",
+            "args": {
+              "to": "jane@acme.example",
+              "subject": "Your ticket T-100",
+              "body": "Summary: login fixed."
+            }
+          }
+        ]
+      },
+      {
+        "name": "issue_refund",
+        "classes": [
+          "write",
+          "spend"
+        ],
+        "title": "Issue refund",
+        "description": "Refund an order.",
+        "input_schema": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "order_id": {
+              "type": "string",
+              "minLength": 1
+            },
+            "amount_eur": {
+              "type": "number",
+              "minimum": 1,
+              "maximum": 500
+            }
+          },
+          "required": [
+            "order_id",
+            "amount_eur"
+          ]
+        },
+        "sim": {
+          "append": "/refunds",
+          "returns": {
+            "refund_id": "{{id}}"
+          }
+        },
+        "examples": [
+          {
+            "say": "Refund order O-7 for 25 euros.",
+            "args": {
+              "order_id": "O-7",
+              "amount_eur": 25
+            }
+          }
+        ]
+      },
+      {
+        "name": "delete_customer",
+        "classes": [
+          "write",
+          "destructive"
+        ],
+        "title": "Delete customer",
+        "description": "Permanently delete a customer record.",
+        "input_schema": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "customer_id": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "required": [
+            "customer_id"
+          ]
+        },
+        "sim": {
+          "delete": "/customers/{{args.customer_id}}"
+        }
+      }
+    ]
+  },
+  "fixtures": {
+    "state": {
+      "tickets": [
+        {
+          "id": "T-100",
+          "subject": "Cannot log in",
+          "customer_id": "C-1",
+          "tenant": "acme"
+        },
+        {
+          "id": "T-101",
+          "subject": "Invoice question",
+          "customer_id": "C-2",
+          "tenant": "acme"
+        }
+      ],
+      "customers": {
+        "C-1": {
+          "id": "C-1",
+          "name": "Jane Roe",
+          "email": "jane@acme.example",
+          "tenant": "acme"
+        },
+        "C-2": {
+          "id": "C-2",
+          "name": "Ivan Petrov",
+          "email": "ivan@acme.example",
+          "tenant": "acme"
+        }
+      },
+      "orders": [
+        {
+          "id": "O-7",
+          "customer_id": "C-1",
+          "total_eur": 25,
+          "tenant": "acme"
+        }
+      ],
+      "notes": [],
+      "sent_emails": [],
+      "refunds": [],
+      "ticket_status": {}
+    },
+    "principal": {
+      "role": "owner",
+      "tenant": "acme",
+      "id": "u_owner"
+    }
+  },
+  "variants": {
+    "default": {
+      "capabilities": [
+        "multi_turn",
+        "hitl_structured"
+      ]
+    }
+  },
+  "packs": [],
+  "suites": [
+    "cases"
+  ],
+  "$comment": "Test fixture: the support-desk catalog with persona cases (test/core/persona.test.ts)."
+}

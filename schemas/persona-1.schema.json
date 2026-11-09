@@ -1,0 +1,146 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://vibiz.ai/schemas/ves/persona-1.json",
+  "title": "VES persona v1: one reusable synthetic person (personas/<id>.persona.json)",
+  "description": "A person the user simulator plays in persona cases. A case references it with input.persona.ref and may override any field (goal, max_user_turns, opening, style...). Text here is data for the simulator prompt, never instructions to the harness.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "id",
+    "temperament"
+  ],
+  "properties": {
+    "$schema": {
+      "type": "string"
+    },
+    "schema_version": {
+      "const": "ves-persona/1"
+    },
+    "id": {
+      "$ref": "#/$defs/personaId",
+      "description": "Equals the file stem: personas/<id>.persona.json."
+    },
+    "name": {
+      "type": "string",
+      "description": "How the person is called, e.g. 'Inês, owner of Padaria Estrela'."
+    },
+    "background": {
+      "type": "string",
+      "description": "Who they are and their business."
+    },
+    "languages": {
+      "$ref": "#/$defs/languages",
+      "description": "Language codes the person writes in, main first (e.g. [\"pt\", \"en\"])."
+    },
+    "style": {
+      "$ref": "#/$defs/personaStyle"
+    },
+    "opening": {
+      "type": "string",
+      "minLength": 1,
+      "description": "A fixed first message, sent before the simulator takes over."
+    },
+    "temperament": {
+      "$ref": "#/$defs/temperaments"
+    },
+    "goal": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Default goal; a case usually sets its own."
+    },
+    "max_user_turns": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 30
+    },
+    "notes": {
+      "type": "string",
+      "description": "For authors; never shown to the simulator."
+    }
+  },
+  "$defs": {
+    "personaId": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9._-]{0,63}$"
+    },
+    "temperament": {
+      "enum": [
+        "eager",
+        "busy",
+        "cold",
+        "sceptical",
+        "irritable",
+        "vague",
+        "goal_changing"
+      ]
+    },
+    "temperaments": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/temperament"
+        },
+        {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/temperament"
+          }
+        }
+      ]
+    },
+    "languages": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "pattern": "^[a-z]{2,3}(-[A-Za-z0-9]{2,8})*$"
+      }
+    },
+    "personaStyle": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "length": {
+          "enum": [
+            "terse",
+            "short",
+            "medium",
+            "long"
+          ]
+        },
+        "typos": {
+          "enum": [
+            "none",
+            "some",
+            "many"
+          ]
+        },
+        "emoji": {
+          "enum": [
+            "none",
+            "some",
+            "many"
+          ]
+        },
+        "impatience": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 3
+        },
+        "formality": {
+          "enum": [
+            "casual",
+            "neutral",
+            "formal"
+          ]
+        },
+        "notes": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}

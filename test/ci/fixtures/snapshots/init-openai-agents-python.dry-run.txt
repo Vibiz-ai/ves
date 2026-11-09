@@ -1,0 +1,188 @@
+--- ves.config.json
+{
+  "$schema": "https://vibiz.ai/schemas/ves/config-1.json",
+  "$comment": "Written by ves init on 2026-11-07 (detected openai-agents-python). Review tools.catalog (set review: \"confirmed\"), then run: ves run --tier smoke",
+  "schema_version": "ves-config/1",
+  "project": "acme-support",
+  "agent": {
+    "name": "acme-support",
+    "framework": "openai-agents",
+    "connection": {
+      "type": "command",
+      "command": [
+        "python",
+        "ves/bridge.py"
+      ],
+      "env_passthrough": [
+        "OPENAI_API_KEY",
+        "ZENDESK_API_KEY"
+      ]
+    }
+  },
+  "tools": {
+    "backend": {
+      "type": "sim"
+    },
+    "gate_classes": [
+      "spend",
+      "outward",
+      "destructive"
+    ],
+    "catalog": [],
+    "schemas_from": "bridge"
+  },
+  "hitl": {
+    "mode": "auto",
+    "binding": "args",
+    "ttl_s": 1800,
+    "authorized": [
+      "owner"
+    ]
+  },
+  "fixtures": {
+    "state": "evals/fixtures/state.json",
+    "principal": {
+      "role": "owner",
+      "tenant": "acme-support",
+      "id": "u_owner"
+    }
+  },
+  "variants": {
+    "default": {}
+  },
+  "packs": [
+    "core-tool-use",
+    "hitl-approval",
+    "prompt-injection",
+    "data-isolation",
+    "over-refusal"
+  ],
+  "suites": [
+    "evals/cases"
+  ],
+  "change_classes": {
+    "0": [
+      "docs/**",
+      "**/*.md",
+      "LICENSE*"
+    ],
+    "2": [
+      "agent/**",
+      "ves/**",
+      "evals/**",
+      "ves.config.json",
+      "ves.intents.json"
+    ]
+  },
+  "models": {
+    "default": {
+      "provider": "vertex",
+      "model": "google/gemini-3.8-flash",
+      "project": "${GOOGLE_CLOUD_PROJECT}",
+      "location": "global"
+    },
+    "judge": "default",
+    "user_simulator": "default",
+    "host_sim": "default",
+    "intent_writer": "default"
+  },
+  "results": {
+    "dir": "ves-results"
+  }
+}
+--- evals/cases/example.case.json.example
+{
+  "$comment": "Rename to example.case.json after replacing your_read_tool with a read tool from tools.catalog. Cases a do-nothing agent passes break the trivial-agent bar, so every case must require an action.",
+  "schema_version": "ves-case/2",
+  "id": "example.read",
+  "version": 1,
+  "owner": "you",
+  "provenance": {
+    "author": "ves init",
+    "created": "2026-01-01",
+    "source": "hand"
+  },
+  "fixture": {
+    "seed": 1,
+    "clock": "2026-01-01T09:00:00Z"
+  },
+  "suite": "regression",
+  "capability": "example.read",
+  "input": {
+    "turns": [
+      {
+        "say": "Find the order O-1 for me."
+      }
+    ]
+  },
+  "expect": {
+    "calls": [
+      {
+        "tool": "your_read_tool",
+        "args": {
+          "id": "O-1"
+        },
+        "min": 1
+      }
+    ]
+  },
+  "oracle": {
+    "kind": "scripted",
+    "steps": [
+      {
+        "call": "your_read_tool",
+        "args": {
+          "id": "O-1"
+        }
+      },
+      {
+        "reply": "Order O-1 is on its way."
+      }
+    ]
+  }
+}
+--- evals/fixtures/state.json
+{}
+--- .github/workflows/ves.yml
+# Written by `ves init`. VES runs your evals on every PR, gates it, comments the result card and stores
+# the baseline on pushes to main. Docs: integrations/github-action/README.md in the harness.
+name: ves
+on:
+  pull_request:
+  push: { branches: [main] }          # produces the baseline artifact
+  schedule: [{ cron: '17 3 * * *' }]  # nightly release tier, REPORT_ONLY
+  workflow_dispatch:
+permissions: { contents: read, pull-requests: write, actions: read }
+concurrency: { group: ves-${{ github.ref }}, cancel-in-progress: true }
+jobs:
+  ves:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 0 }
+      # Your agent's own runtime (detected: openai-agents-python):
+      - uses: actions/setup-python@v5
+        with: { python-version: '3.12' }
+      - run: pip install -e .
+      # Only if a pack/persona needs harness-side models (judge, user simulator, host-sim): Vertex via WIF -> ADC
+      # - uses: google-github-actions/auth@v2
+      #   with: { workload_identity_provider: ${{ vars.GCP_WIF_PROVIDER }}, service_account: ${{ vars.GCP_SA }} }
+      - uses: <org>/ves/integrations/github-action@<40-hex-sha>   # pin by full SHA
+        with:
+          config: ves.config.json
+        env:   # the agent's own keys, passed through agent.connection.env_passthrough
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          ZENDESK_API_KEY: ${{ secrets.ZENDESK_API_KEY }}
+--- ves/setup-base.sh
+#!/usr/bin/env bash
+# Run by `ves ci baseline --mode run-base` inside the base-branch worktree before it runs the base agent.
+# Keep it isolated from the PR head install. Edit if the base needs a different install.
+set -euo pipefail
+python -m venv .ves-base-venv
+. .ves-base-venv/bin/activate
+pip install -e .
+--- .gitignore (append)
+# ves
+ves-results/
+.ves-cache/

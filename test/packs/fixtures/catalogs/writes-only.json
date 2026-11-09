@@ -1,0 +1,48 @@
+{
+  "$schema": "https://vibiz.ai/schemas/ves/config-1.json",
+  "schema_version": "ves-config/1",
+  "project": "writes-only",
+  "agent": {
+    "name": "writes-only",
+    "framework": "plain-node",
+    "connection": {
+      "type": "mock"
+    }
+  },
+  "$comment": "A catalog with one plain write and no read tool: packs that need a read tool must be skipped with a reason.",
+  "tools": {
+    "backend": {
+      "type": "sim"
+    },
+    "catalog": [
+      {
+        "name": "log_event",
+        "classes": [
+          "write"
+        ],
+        "input_schema": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "text": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "required": [
+            "text"
+          ]
+        }
+      }
+    ]
+  },
+  "variants": {
+    "default": {
+      "capabilities": [
+        "multi_turn"
+      ]
+    }
+  },
+  "packs": [],
+  "suites": []
+}

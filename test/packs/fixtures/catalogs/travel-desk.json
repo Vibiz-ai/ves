@@ -1,0 +1,284 @@
+{
+  "$schema": "https://vibiz.ai/schemas/ves/config-1.json",
+  "schema_version": "ves-config/1",
+  "project": "travel-desk",
+  "agent": {
+    "name": "travel-desk",
+    "framework": "openai-agents",
+    "connection": {
+      "type": "mock"
+    }
+  },
+  "$comment": "Made-up catalog #1 for the packs tests (a travel agency assistant). Not shipped with any pack.",
+  "tools": {
+    "backend": {
+      "type": "sim"
+    },
+    "catalog": [
+      {
+        "name": "find_hotels",
+        "classes": [
+          "read"
+        ],
+        "title": "Find hotels",
+        "description": "Search hotels in a city for a check-in date.",
+        "input_schema": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "city": {
+              "type": "string",
+              "minLength": 2
+            },
+            "checkin": {
+              "type": "string",
+              "format": "date"
+            },
+            "max_price": {
+              "type": "number",
+              "minimum": 10
+            }
+          },
+          "required": [
+            "city",
+            "checkin"
+          ]
+        },
+        "output_schema": {
+          "type": "object",
+          "properties": {
+            "hotels": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "sim": {
+          "read": "/hotels",
+          "where": {
+            "city": "{{args.city}}"
+          }
+        }
+      },
+      {
+        "name": "get_booking",
+        "classes": [
+          "read"
+        ],
+        "title": "Get booking",
+        "description": "Look up one booking by reference.",
+        "input_schema": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "booking_ref": {
+              "type": "string",
+              "pattern": "^BK-[0-9]{4,}$"
+            }
+          },
+          "required": [
+            "booking_ref"
+          ]
+        },
+        "examples": [
+          {
+            "say": "What is the status of booking BK-20417?",
+            "args": {
+              "booking_ref": "BK-20417"
+            }
+          }
+        ],
+        "sim": {
+          "read": "/bookings/{{args.booking_ref}}",
+          "tenant_key": "/tenant"
+        }
+      },
+      {
+        "name": "hold_room",
+        "classes": [
+          "write"
+        ],
+        "title": "Hold a room",
+        "description": "Place a free 24h hold on a hotel room.",
+        "input_schema": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "hotel_id": {
+              "type": "string",
+              "minLength": 1
+            },
+            "nights": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 14
+            }
+          },
+          "required": [
+            "hotel_id",
+            "nights"
+          ]
+        }
+      },
+      {
+        "name": "save_traveller_note",
+        "classes": [
+          "write"
+        ],
+        "title": "Save traveller note",
+        "description": "Remember a preference for a traveller.",
+        "input_schema": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "traveller_id": {
+              "type": "string",
+              "minLength": 1
+            },
+            "note": {
+              "type": "string",
+              "minLength": 3
+            }
+          },
+          "required": [
+            "traveller_id",
+            "note"
+          ]
+        },
+        "sim": {
+          "append": "/notes",
+          "returns": {
+            "note_id": "{{id}}"
+          }
+        }
+      },
+      {
+        "name": "book_flight",
+        "classes": [
+          "spend"
+        ],
+        "title": "Book flight",
+        "description": "Book and pay for a flight.",
+        "input_schema": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "flight_no": {
+              "type": "string",
+              "minLength": 3
+            },
+            "passengers": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9
+            }
+          },
+          "required": [
+            "flight_no",
+            "passengers"
+          ]
+        },
+        "examples": [
+          {
+            "say": "Book flight TP1351 for 2 passengers.",
+            "args": {
+              "flight_no": "TP1351",
+              "passengers": 2
+            }
+          }
+        ]
+      },
+      {
+        "name": "email_itinerary",
+        "classes": [
+          "outward"
+        ],
+        "title": "Email itinerary",
+        "description": "Send the itinerary to a traveller by email.",
+        "normalise": {
+          "to": "lower"
+        },
+        "input_schema": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "to": {
+              "type": "string",
+              "format": "email"
+            },
+            "booking_ref": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "required": [
+            "to",
+            "booking_ref"
+          ]
+        }
+      },
+      {
+        "name": "cancel_trip",
+        "classes": [
+          "destructive"
+        ],
+        "title": "Cancel trip",
+        "description": "Cancel a trip and release every reservation in it.",
+        "input_schema": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "booking_ref": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "required": [
+            "booking_ref"
+          ]
+        }
+      }
+    ]
+  },
+  "fixtures": {
+    "state": {
+      "hotels": [
+        {
+          "name": "Casa Azul",
+          "city": "Lisbon",
+          "price": 120
+        }
+      ],
+      "bookings": {
+        "BK-20417": {
+          "ref": "BK-20417",
+          "status": "confirmed",
+          "tenant": "wanderly"
+        }
+      }
+    },
+    "principal": {
+      "role": "owner",
+      "tenant": "wanderly",
+      "id": "u_ana"
+    }
+  },
+  "variants": {
+    "default": {
+      "capabilities": [
+        "multi_turn",
+        "hitl_structured",
+        "schedule_clock"
+      ]
+    }
+  },
+  "packs": [],
+  "suites": []
+}

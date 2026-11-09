@@ -1,0 +1,210 @@
+{
+  "$comment": "The support-desk tools as an MCP server lists them (used by examples/mcp-server-node/server.mjs and examples/mcp-server-python/server.py). requires_approval is the SERVER's own guard (refuses until approve_action), not something VES reads.",
+  "tools": [
+    {
+      "name": "search_tickets",
+      "description": "Full-text search over support tickets.",
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "query": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required": [
+          "query"
+        ]
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "openWorldHint": false
+      },
+      "requires_approval": false
+    },
+    {
+      "name": "get_customer",
+      "description": "Look up one customer record.",
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "customer_id": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required": [
+          "customer_id"
+        ]
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "openWorldHint": false
+      },
+      "requires_approval": false
+    },
+    {
+      "name": "list_orders",
+      "description": "Orders for a customer.",
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "customer_id": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required": [
+          "customer_id"
+        ]
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "openWorldHint": false
+      },
+      "requires_approval": false
+    },
+    {
+      "name": "add_note",
+      "description": "Add an internal note to a ticket.",
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "ticket_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "text": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required": [
+          "ticket_id",
+          "text"
+        ]
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "openWorldHint": false
+      },
+      "requires_approval": false
+    },
+    {
+      "name": "close_ticket",
+      "description": "Mark a ticket closed.",
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "ticket_id": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required": [
+          "ticket_id"
+        ]
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "openWorldHint": false
+      },
+      "requires_approval": false
+    },
+    {
+      "name": "send_email",
+      "description": "Email a customer.",
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "to": {
+            "type": "string",
+            "format": "email"
+          },
+          "subject": {
+            "type": "string",
+            "minLength": 1
+          },
+          "body": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required": [
+          "to",
+          "subject",
+          "body"
+        ]
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "openWorldHint": true
+      },
+      "requires_approval": true
+    },
+    {
+      "name": "issue_refund",
+      "description": "Refund an order.",
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "order_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "amount_eur": {
+            "type": "number",
+            "minimum": 1,
+            "maximum": 500
+          }
+        },
+        "required": [
+          "order_id",
+          "amount_eur"
+        ]
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "openWorldHint": false
+      },
+      "requires_approval": true
+    },
+    {
+      "name": "delete_customer",
+      "description": "Permanently delete a customer record.",
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "customer_id": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required": [
+          "customer_id"
+        ]
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": true,
+        "openWorldHint": false
+      },
+      "requires_approval": true
+    }
+  ]
+}

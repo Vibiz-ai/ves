@@ -1,0 +1,10 @@
+{
+  "name": "graph-js",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "@langchain/langgraph": "^0.4",
+    "@langchain/core": "^0.3"
+  }
+}

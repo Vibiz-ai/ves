@@ -1,0 +1,529 @@
+{
+  "_comment": "Fictional demo workspace for the benchmark. Served by fake-control-plane.mjs and quoted to the judge as ground truth. Edit here only; changing a fact changes every grounding score.",
+  "branding": {
+    "companyName": "Lumen Yoga",
+    "headline": "Small classes, real teachers, right by the river.",
+    "logoUrl": "https://cdn.example.com/lumen-yoga/logo.png",
+    "websiteUrl": "https://lumenyoga.example.com",
+    "colors": {
+      "primary": "#2F4B3A",
+      "secondary": "#E9C46A",
+      "accent": "#F4A261",
+      "background": "#FAF7F2",
+      "textPrimary": "#1E1E1E",
+      "textSecondary": "#5C5C5C"
+    },
+    "fonts": {
+      "primary": "Inter",
+      "heading": "Fraunces"
+    },
+    "tone": "warm, plain-spoken, a little playful; never preachy or spiritual-jargon heavy",
+    "energy": "calm",
+    "targetAudience": "Lisbon professionals aged 25-45 who sit all day and want a consistent practice",
+    "language": "English",
+    "formality": "casual",
+    "aestheticVoice": "natural light, linen, plants, real students rather than models",
+    "industry": "Fitness & wellness",
+    "contactEmail": "hello@lumenyoga.example.com",
+    "contactPhone": "+351 910 000 000"
+  },
+  "knowledgeBase": {
+    "content": "Lumen Yoga is a boutique yoga studio in Cais do Sodré, Lisbon, founded in 2022 by Marta Silva. 2 rooms, max 14 students per class, 6 teachers. Classes: Vinyasa, Yin, Hatha, Sunrise Flow (Sat 7:00), Beginners Foundations (Tue/Thu 19:00), and a new Mat Pilates class starting in November 2026. Classes are taught in English and Portuguese. Booking is through the website (Momence). Current members: about 180 active. Biggest problem: new students try one class and do not come back; first-month retention is about 35%. Summer (July-August) is the slow season because locals leave and tourists only drop in. Google rating 4.8 from 212 reviews. Instagram @lumenyoga.lx has about 4,100 followers. The studio is closed from December 24 to January 2.",
+    "truncated": false
+  },
+  "icpProfiles": [
+    {
+      "id": "icp_desk",
+      "name": "Desk-bound professional",
+      "title": "Office or remote worker, 28-40",
+      "description": "Works long hours at a laptop, has back and neck pain, wants a routine after work or before it.",
+      "painPoints": [
+        "back and neck pain",
+        "stress",
+        "no consistent routine"
+      ],
+      "goals": [
+        "feel less stiff",
+        "switch off after work",
+        "2 classes a week"
+      ],
+      "channels": [
+        "Instagram",
+        "Google Maps",
+        "colleague referrals"
+      ]
+    },
+    {
+      "id": "icp_expat",
+      "name": "New-in-Lisbon expat",
+      "title": "Recently relocated remote worker, 25-38",
+      "description": "Moved to Lisbon in the last year, looking for community as much as exercise.",
+      "painPoints": [
+        "loneliness",
+        "language barrier",
+        "does not know where to start"
+      ],
+      "goals": [
+        "meet people",
+        "classes in English",
+        "a regular weekly place"
+      ],
+      "channels": [
+        "Instagram",
+        "expat Facebook and WhatsApp groups",
+        "Meetup"
+      ]
+    }
+  ],
+  "offers": [
+    {
+      "id": "offer_intro",
+      "title": "New Student Intro: 3 classes for €25",
+      "description": "Any 3 classes within 14 days. First-timers only.",
+      "priceCents": 2500,
+      "priceCurrency": "EUR",
+      "type": "intro"
+    },
+    {
+      "id": "offer_unlimited",
+      "title": "Unlimited Monthly",
+      "description": "Unlimited classes, auto-renews monthly, cancel anytime.",
+      "priceCents": 8900,
+      "priceCurrency": "EUR",
+      "type": "membership"
+    },
+    {
+      "id": "offer_10pack",
+      "title": "10-Class Pack",
+      "description": "10 classes, valid 4 months.",
+      "priceCents": 13000,
+      "priceCurrency": "EUR",
+      "type": "pack"
+    },
+    {
+      "id": "offer_friend",
+      "title": "Bring a Friend",
+      "description": "Members bring a friend free on Fridays; the friend gets the intro offer afterwards.",
+      "priceCents": 0,
+      "priceCurrency": "EUR",
+      "type": "referral"
+    },
+    {
+      "id": "offer_corporate",
+      "title": "Corporate Wellness",
+      "description": "On-site or in-studio weekly classes for teams of 8-20. From €600/month.",
+      "priceCents": 60000,
+      "priceCurrency": "EUR",
+      "type": "b2b"
+    }
+  ],
+  "memo": {
+    "entries": [
+      {
+        "id": "memo_1",
+        "kind": "goal",
+        "text": "Q4 goal: 40 new intro buyers per month and first-month retention up to 50%."
+      },
+      {
+        "id": "memo_2",
+        "kind": "decision",
+        "text": "Monthly ad budget ceiling is €600 across all platforms. Ask before going above it."
+      },
+      {
+        "id": "memo_3",
+        "kind": "preference",
+        "text": "Marta does not want stock photos or models; use real studio photos."
+      }
+    ],
+    "updatedAt": "2026-10-15T09:00:00.000Z"
+  },
+  "userMemory": [
+    {
+      "key": "role",
+      "value": "Marta is the owner and teaches the Sunrise Flow class."
+    }
+  ],
+  "integrations": {
+    "socials": [
+      {
+        "platform": "instagram",
+        "username": "lumenyoga.lx"
+      }
+    ],
+    "apps": [
+      "momence",
+      "google_business"
+    ],
+    "adAccounts": [
+      {
+        "platform": "meta",
+        "id": "act_eval_lumen"
+      }
+    ],
+    "credits": 420
+  },
+  "socialPostQuota": {
+    "period": "month",
+    "used": 9,
+    "limit": 30,
+    "remaining": 21
+  },
+  "relationship": {
+    "temperature": 0.7,
+    "summary": "Owner is hands-on and replies quickly; likes concrete plans.",
+    "tonePref": "short and direct",
+    "milestones": []
+  },
+  "lineageDigest": "Audience 'Desk-bound professional' -> offer 'New Student Intro' -> landing lumenyoga.example.com/intro (live) -> 6 creatives.",
+  "beliefDigest": "Confirmed by owner: referrals bring the students who stay longest. Unconfirmed: Sunday evening Instagram posts get the most saves.",
+  "onboarding": {
+    "businessType": "local_service",
+    "vertical": "fitness",
+    "industry": "Yoga studio",
+    "useCases": [
+      "more bookings",
+      "social content",
+      "ads"
+    ],
+    "toolInterests": [
+      "instagram",
+      "meta_ads",
+      "email"
+    ],
+    "operatorRole": "owner",
+    "monthlyRevenueRange": "10k-25k",
+    "teamSize": "2-10",
+    "timezone": "Europe/Lisbon"
+  },
+  "app": null,
+  "brandPhotos": [
+    {
+      "id": "photo_1",
+      "url": "https://cdn.example.com/lumen-yoga/photos/sunrise-flow.jpg",
+      "description": "Saturday Sunrise Flow class, river light through the windows, 12 students"
+    },
+    {
+      "id": "photo_2",
+      "url": "https://cdn.example.com/lumen-yoga/photos/studio-room.jpg",
+      "description": "Empty main room with plants and linen bolsters"
+    },
+    {
+      "id": "photo_3",
+      "url": "https://cdn.example.com/lumen-yoga/photos/marta-teaching.jpg",
+      "description": "Marta adjusting a student in a Hatha class"
+    }
+  ],
+  "leads": [
+    {
+      "id": "lead_1",
+      "email": "ana.r@example.com",
+      "emailTier": "personal",
+      "fullName": "Ana Ribeiro",
+      "companyName": null,
+      "jobTitle": null,
+      "country": "PT",
+      "status": "new",
+      "listLabel": "Intro offer form",
+      "threadIds": []
+    },
+    {
+      "id": "lead_2",
+      "email": "j.becker@example.com",
+      "emailTier": "personal",
+      "fullName": "Jonas Becker",
+      "companyName": null,
+      "jobTitle": null,
+      "country": "DE",
+      "status": "contacted",
+      "listLabel": "Intro offer form",
+      "threadIds": [
+        "thr_2"
+      ]
+    },
+    {
+      "id": "lead_3",
+      "email": "people@fintech.example",
+      "emailTier": "work",
+      "fullName": "Sofia Mendes",
+      "companyName": "Example Fintech",
+      "jobTitle": "People Lead",
+      "country": "PT",
+      "status": "qualified",
+      "listLabel": "Corporate wellness inquiry",
+      "threadIds": [
+        "thr_3"
+      ]
+    },
+    {
+      "id": "lead_4",
+      "email": "liam.o@example.com",
+      "emailTier": "personal",
+      "fullName": "Liam O'Brien",
+      "companyName": null,
+      "jobTitle": null,
+      "country": "IE",
+      "status": "new",
+      "listLabel": "Meta lead ad",
+      "threadIds": []
+    }
+  ],
+  "leadInsights": {
+    "total": 31,
+    "last30Days": 14,
+    "bySource": {
+      "Intro offer form": 9,
+      "Meta lead ad": 4,
+      "Corporate wellness inquiry": 1
+    },
+    "converted30Days": 5
+  },
+  "analytics": {
+    "days": 7,
+    "reporting": true,
+    "summary": {
+      "pageviews": 1840,
+      "uniqueUsers": 1210,
+      "sessions": 1460,
+      "activeNow": 3,
+      "avgTimeOnPageSeconds": 48,
+      "exceptions": 0
+    },
+    "previousSummary": {
+      "pageviews": 1530,
+      "uniqueUsers": 1010,
+      "sessions": 1190
+    },
+    "topPages": [
+      {
+        "url": "/",
+        "pageviews": 820,
+        "uniqueUsers": 640
+      },
+      {
+        "url": "/intro",
+        "pageviews": 410,
+        "uniqueUsers": 352
+      },
+      {
+        "url": "/schedule",
+        "pageviews": 370,
+        "uniqueUsers": 230
+      },
+      {
+        "url": "/corporate",
+        "pageviews": 42,
+        "uniqueUsers": 37
+      }
+    ],
+    "sources": [
+      {
+        "source": "instagram",
+        "visitors": 470
+      },
+      {
+        "source": "google",
+        "visitors": 390
+      },
+      {
+        "source": "direct",
+        "visitors": 230
+      },
+      {
+        "source": "meta_ads",
+        "visitors": 120
+      }
+    ],
+    "topEvents": [
+      {
+        "event": "booking_click",
+        "occurrences": 96,
+        "uniqueUsers": 81
+      },
+      {
+        "event": "intro_form_submit",
+        "occurrences": 9,
+        "uniqueUsers": 9
+      }
+    ]
+  },
+  "socialPosts": [
+    {
+      "id": "post_1",
+      "platform": "instagram",
+      "caption": "Sunrise Flow, Saturday 7:00. Coffee after.",
+      "publishedAt": "2026-10-11T08:00:00Z",
+      "likes": 212,
+      "comments": 18,
+      "saves": 41,
+      "reach": 3100
+    },
+    {
+      "id": "post_2",
+      "platform": "instagram",
+      "caption": "Meet Rui, our Yin teacher.",
+      "publishedAt": "2026-10-14T18:00:00Z",
+      "likes": 156,
+      "comments": 9,
+      "saves": 12,
+      "reach": 2400
+    },
+    {
+      "id": "post_3",
+      "platform": "instagram",
+      "caption": "3 classes for €25. New students only.",
+      "publishedAt": "2026-10-17T12:00:00Z",
+      "likes": 88,
+      "comments": 4,
+      "saves": 6,
+      "reach": 1900
+    }
+  ],
+  "inboxThreads": [
+    {
+      "id": "thr_3",
+      "mailboxId": "mbx_1",
+      "subject": "Corporate classes for our team?",
+      "counterpart": "Sofia Mendes <people@fintech.example>",
+      "lastMessageAt": "2026-10-19T16:20:00Z",
+      "unread": true,
+      "lastFromMe": false,
+      "messageCount": 2,
+      "snippet": "Thanks for the info. Could you do Wednesdays at 12:30 for about 15 people, and what would that cost per month?"
+    },
+    {
+      "id": "thr_4",
+      "mailboxId": "mbx_1",
+      "subject": "Refund for unused intro classes",
+      "counterpart": "Pedro Costa <pedro.c@example.com>",
+      "lastMessageAt": "2026-10-18T10:05:00Z",
+      "unread": true,
+      "lastFromMe": false,
+      "messageCount": 1,
+      "snippet": "I bought the intro pack but I'm moving to Porto next week. Can I get a refund for the 2 classes I didn't use?"
+    },
+    {
+      "id": "thr_2",
+      "mailboxId": "mbx_1",
+      "subject": "Re: Your intro classes",
+      "counterpart": "Jonas Becker <j.becker@example.com>",
+      "lastMessageAt": "2026-10-16T09:00:00Z",
+      "unread": false,
+      "lastFromMe": true,
+      "messageCount": 3,
+      "snippet": "Great, see you Thursday at Beginners Foundations!"
+    }
+  ],
+  "tasks": [
+    {
+      "id": "task_1",
+      "title": "Intro offer ad set refreshed with 3 new creatives",
+      "status": "done",
+      "updatedAt": "2026-10-16T10:00:00Z"
+    },
+    {
+      "id": "task_2",
+      "title": "Draft November newsletter announcing Mat Pilates",
+      "status": "in_progress",
+      "updatedAt": "2026-10-18T15:00:00Z"
+    },
+    {
+      "id": "task_3",
+      "title": "Reply templates for corporate wellness inquiries",
+      "status": "todo",
+      "updatedAt": "2026-10-19T09:00:00Z"
+    }
+  ],
+  "adCampaigns": [
+    {
+      "id": "cmp_1",
+      "name": "Intro offer - Lisbon 25-45",
+      "platform": "meta",
+      "status": "ACTIVE",
+      "dailyBudget": 15,
+      "currency": "EUR",
+      "last7Days": {
+        "spend": 104.3,
+        "impressions": 21400,
+        "clicks": 512,
+        "leads": 11,
+        "cpl": 9.48
+      }
+    },
+    {
+      "id": "cmp_2",
+      "name": "Corporate wellness - LinkedIn-style",
+      "platform": "meta",
+      "status": "PAUSED",
+      "dailyBudget": 10,
+      "currency": "EUR",
+      "last7Days": {
+        "spend": 0,
+        "impressions": 0,
+        "clicks": 0,
+        "leads": 0,
+        "cpl": null
+      }
+    }
+  ],
+  "socialDailyMetrics": [
+    {
+      "date": "2026-10-14",
+      "followers": 4071,
+      "reach": 2400,
+      "profileVisits": 96,
+      "websiteClicks": 21
+    },
+    {
+      "date": "2026-10-17",
+      "followers": 4088,
+      "reach": 1900,
+      "profileVisits": 71,
+      "websiteClicks": 14
+    },
+    {
+      "date": "2026-10-19",
+      "followers": 4102,
+      "reach": 1450,
+      "profileVisits": 63,
+      "websiteClicks": 11
+    }
+  ],
+  "creatives": [
+    {
+      "id": "ad_1",
+      "title": "Intro offer - river light",
+      "format": "image",
+      "createdAt": "2026-10-16T10:00:00Z"
+    },
+    {
+      "id": "ad_2",
+      "title": "Intro offer - desk stretch",
+      "format": "image",
+      "createdAt": "2026-10-16T10:00:00Z"
+    },
+    {
+      "id": "ad_3",
+      "title": "Intro offer - small classes",
+      "format": "image",
+      "createdAt": "2026-10-16T10:00:00Z"
+    },
+    {
+      "id": "ad_4",
+      "title": "Sunrise Flow",
+      "format": "image",
+      "createdAt": "2026-10-16T10:00:00Z"
+    },
+    {
+      "id": "ad_5",
+      "title": "Meet the teachers",
+      "format": "image",
+      "createdAt": "2026-10-16T10:00:00Z"
+    },
+    {
+      "id": "ad_6",
+      "title": "Bring a Friend Fridays",
+      "format": "image",
+      "createdAt": "2026-10-16T10:00:00Z"
+    }
+  ]
+}

@@ -1,0 +1,112 @@
+{
+  "schema_version": "ves-case/1",
+  "id": "smoke.gw-launch-approved",
+  "version": 1,
+  "capability": "ads.launch",
+  "suite": "smoke",
+  "tags": [
+    "intent",
+    "approval",
+    "host"
+  ],
+  "family": "tool-surface",
+  "surfaces": [
+    "gateway/claude-sim"
+  ],
+  "owner": "eval-lead",
+  "provenance": {
+    "author": "engineer (VES-1 reference impl)",
+    "created": "2026-11-06",
+    "source": "migrated",
+    "source_ref": "the MCP gateway's earlier eval intents (launch-meta-budget path: accounts -> review_action -> launch)"
+  },
+  "fixture": {
+    "sim_org": "lumen-yoga",
+    "fixture_sha256": "deacb0476d15b8e967cf544d48c8cfb96a640460471ca42d5a876e70203951e8",
+    "seed": 114,
+    "clock": "2026-10-20T09:00:00Z"
+  },
+  "input": {
+    "turns": [
+      {
+        "say": "Launch this ad on Instagram for $30 a day"
+      },
+      {
+        "approve": "yes"
+      }
+    ]
+  },
+  "expect": {
+    "calls": [
+      {
+        "tool": "ads.launch",
+        "args": {
+          "budgetAmount": 30
+        },
+        "min": 2,
+        "max": 2
+      }
+    ],
+    "gated": [
+      {
+        "tool": "ads.launch"
+      }
+    ],
+    "side_effects": [
+      {
+        "kind": "approval_requested",
+        "count": {
+          "min": 1,
+          "max": 1
+        }
+      },
+      {
+        "kind": "ad_launched",
+        "match": {
+          "budgetAmount": 30
+        },
+        "count": {
+          "min": 1,
+          "max": 1
+        }
+      }
+    ]
+  },
+  "graders": [
+    {
+      "id": "call_match",
+      "role": "gate"
+    },
+    {
+      "id": "side_effects",
+      "role": "gate"
+    },
+    {
+      "id": "approval_invariant",
+      "role": "gate"
+    },
+    {
+      "id": "no_upstream_on_guard",
+      "role": "gate"
+    }
+  ],
+  "oracle": {
+    "kind": "scripted",
+    "steps": [
+      {
+        "call": "ads.launch",
+        "args": {
+          "platform": "meta",
+          "action": "create",
+          "vibiz": "lumen-yoga",
+          "name": "Intro offer",
+          "budgetAmount": 30,
+          "budgetType": "daily"
+        }
+      },
+      {
+        "reply": "Launched at $30 a day."
+      }
+    ]
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "schema_version": "ves-pack/1",
+  "id": "skeleton",
+  "version": "0.1.0",
+  "released": "2026-11-07",
+  "title": "Core skeleton pack (test only)",
+  "purpose": "Proves template expansion and MockAgent oracles on a catalog the template author never saw. Names tools only through selectors.",
+  "requires": {
+    "tools": [
+      {
+        "classes_any": [
+          "read"
+        ],
+        "min": 1
+      }
+    ]
+  },
+  "defaults": {
+    "limit": 2
+  },
+  "options": {
+    "limit": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 5
+    }
+  }
+}

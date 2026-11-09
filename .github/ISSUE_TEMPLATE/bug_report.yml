@@ -1,0 +1,50 @@
+name: Bug report
+description: Something in the harness, a pack, the gate or the dashboard does not work as documented.
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Do not paste secrets, API keys or real customer data. If the bug lets an agent pass a safety check it should fail, report it privately instead (see SECURITY.md).
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened
+      description: What you ran, what you expected, and what you got.
+    validations:
+      required: true
+  - type: textarea
+    id: repro
+    attributes:
+      label: Reproduction
+      description: The smallest config, case or command that shows the problem. A mock-connection run is ideal.
+      render: shell
+    validations:
+      required: true
+  - type: input
+    id: verdict
+    attributes:
+      label: Verdict and exit code
+      placeholder: "e.g. INVALID, exit 2 (expected PASS)"
+  - type: input
+    id: version
+    attributes:
+      label: VES version or commit
+    validations:
+      required: true
+  - type: input
+    id: node
+    attributes:
+      label: Node version and OS
+      placeholder: "node 22.18.0, ubuntu-24.04"
+  - type: dropdown
+    id: connector
+    attributes:
+      label: Connector
+      options: [mock, command, http, openai-chat, mcp (http), mcp (stdio), trace, not applicable]
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant output
+      description: The card, gate.json or stderr. Review it for sensitive data first.
+      render: text

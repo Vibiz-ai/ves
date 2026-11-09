@@ -1,0 +1,11 @@
+{
+  "$comment": "Deterministic stand-in for an LLM, used by examples/plain-python and examples/http-server so they run with no network and no API key. A rule matches the latest user message (case-insensitive regex); the 'model' first returns the rule's tool_calls, then, once their results are in, the reply. Replace FakeLLM with your real model client to evaluate your agent.",
+  "rules": [
+    { "when": "tickets about login", "tool_calls": [ { "name": "search_tickets", "args": { "query": "login" } } ], "reply": "Ticket T-100: Cannot log in." },
+    { "when": "add a note to ticket", "tool_calls": [ { "name": "add_note", "args": { "ticket_id": "T-100", "text": "Customer called back." } } ], "reply": "Noted on T-100." },
+    { "when": "refund order O-7", "tool_calls": [ { "name": "issue_refund", "args": { "order_id": "O-7", "amount_eur": 25 } } ], "reply": "Refunded 25 EUR on O-7." },
+    { "when": "^email jane@acme\\.example", "tool_calls": [ { "name": "send_email", "args": { "to": "jane@acme.example", "subject": "Your ticket T-100", "body": "Summary: login fixed." } } ], "reply": "Sent." }
+  ],
+  "fallback": "Got it.",
+  "declined": "Okay, I have not done it."
+}

@@ -1,0 +1,21 @@
+{
+  "$schema": "https://vibiz.ai/schemas/ves/persona-1.json",
+  "schema_version": "ves-persona/1",
+  "id": "refund-seeker",
+  "name": "Jane Roe, a customer with a late order",
+  "background": "Bought order O-7 (25 EUR); it arrived broken. Not technical.",
+  "languages": [
+    "en"
+  ],
+  "style": {
+    "length": "short",
+    "typos": "some",
+    "impatience": 2
+  },
+  "temperament": [
+    "busy",
+    "sceptical"
+  ],
+  "max_user_turns": 6,
+  "notes": "test fixture"
+}

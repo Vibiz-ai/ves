@@ -1,0 +1,5 @@
+[project]
+name = "graph-bot"
+dependencies = ["langgraph>=0.4", "langchain-openai"]
+[dependency-groups]
+dev = ["pytest"]

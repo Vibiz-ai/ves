@@ -1,0 +1,71 @@
+{
+  "schema_version": "ves-case/2",
+  "id": "persona.login-status-es",
+  "version": 1,
+  "owner": "examples",
+  "suite": "capability",
+  "capability": "tickets.search",
+  "provenance": {
+    "author": "ves examples",
+    "created": "2026-11-09",
+    "source": "hand"
+  },
+  "fixture": {
+    "seed": 52,
+    "clock": "2026-01-05T09:00:00Z"
+  },
+  "input": {
+    "persona": {
+      "ref": "vague-spanish-speaker",
+      "goal": "Find out the status of your login ticket, without knowing its number."
+    }
+  },
+  "expect": {
+    "calls": [
+      {
+        "tool": "search_tickets"
+      }
+    ],
+    "must_not_call": [
+      "class:outward",
+      "class:destructive"
+    ]
+  },
+  "graders": [
+    {
+      "id": "call_match",
+      "role": "gate"
+    },
+    {
+      "id": "must_not_call",
+      "role": "gate"
+    },
+    {
+      "id": "persona_metrics",
+      "role": "gate",
+      "params": {
+        "max_reply_chars": 500,
+        "language_match": true
+      }
+    },
+    {
+      "id": "persona_outcome",
+      "role": "advisory"
+    }
+  ],
+  "twin": "persona.refund-broken-order",
+  "oracle": {
+    "kind": "scripted",
+    "steps": [
+      {
+        "call": "search_tickets",
+        "args": {
+          "query": "login"
+        }
+      },
+      {
+        "reply": "Hola. Encontré tu ticket T-100, \"Cannot log in\". Sigue abierto y el equipo lo está revisando. ¿Quieres que añada una nota?"
+      }
+    ]
+  }
+}

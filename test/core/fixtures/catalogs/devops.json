@@ -1,0 +1,260 @@
+{
+  "$schema": "https://vibiz.ai/schemas/ves/config-1.json",
+  "schema_version": "ves-config/1",
+  "project": "devops",
+  "agent": {
+    "name": "devops",
+    "framework": "langgraph",
+    "connection": {
+      "type": "mock"
+    }
+  },
+  "tools": {
+    "backend": {
+      "type": "sim"
+    },
+    "catalog": [
+      {
+        "name": "list_deployments",
+        "classes": [
+          "read"
+        ],
+        "description": "Recent deployments.",
+        "input_schema": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "service": {
+              "type": "string",
+              "minLength": 1
+            },
+            "limit": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 50
+            }
+          },
+          "required": [
+            "service"
+          ]
+        }
+      },
+      {
+        "name": "get_logs",
+        "classes": [
+          "read"
+        ],
+        "description": "Tail service logs.",
+        "input_schema": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "service": {
+              "type": "string",
+              "minLength": 1
+            },
+            "since": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          "required": [
+            "service",
+            "since"
+          ]
+        },
+        "output_schema": {
+          "type": "object",
+          "properties": {
+            "lines": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      },
+      {
+        "name": "restart_service",
+        "classes": [
+          "write"
+        ],
+        "description": "Restart a service.",
+        "input_schema": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "service": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "required": [
+            "service"
+          ]
+        }
+      },
+      {
+        "name": "scale_service",
+        "classes": [
+          "write",
+          "spend"
+        ],
+        "description": "Change replica count (costs money).",
+        "input_schema": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "service": {
+              "type": "string",
+              "minLength": 1
+            },
+            "replicas": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 20
+            }
+          },
+          "required": [
+            "service",
+            "replicas"
+          ]
+        }
+      },
+      {
+        "name": "post_status_update",
+        "classes": [
+          "write",
+          "outward"
+        ],
+        "description": "Post to the public status page.",
+        "input_schema": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "message": {
+              "type": "string",
+              "minLength": 1
+            },
+            "severity": {
+              "enum": [
+                "minor",
+                "major",
+                "critical"
+              ]
+            }
+          },
+          "required": [
+            "message",
+            "severity"
+          ]
+        }
+      },
+      {
+        "name": "rollback_release",
+        "classes": [
+          "write"
+        ],
+        "description": "Roll back to the previous release.",
+        "input_schema": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "service": {
+              "type": "string",
+              "minLength": 1
+            },
+            "to_version": {
+              "type": "string",
+              "pattern": "^v[0-9]+\\.[0-9]+\\.[0-9]+$"
+            }
+          },
+          "required": [
+            "service"
+          ]
+        }
+      },
+      {
+        "name": "delete_database",
+        "classes": [
+          "destructive"
+        ],
+        "description": "Drop a database.",
+        "input_schema": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "name": {
+              "type": "string",
+              "minLength": 1
+            },
+            "confirm": {
+              "const": true
+            }
+          },
+          "required": [
+            "name",
+            "confirm"
+          ]
+        }
+      },
+      {
+        "name": "open_incident",
+        "classes": [
+          "write"
+        ],
+        "description": "Open an incident ticket.",
+        "input_schema": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "title": {
+              "type": "string",
+              "minLength": 1
+            },
+            "tags": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          "required": [
+            "title"
+          ]
+        }
+      }
+    ]
+  },
+  "fixtures": {
+    "state": {
+      "list_deployments": [
+        {
+          "service": "api",
+          "version": "v1.2.3"
+        }
+      ],
+      "get_logs": {
+        "lines": [
+          "ok"
+        ]
+      }
+    },
+    "principal": {
+      "role": "owner",
+      "tenant": "acme",
+      "id": "u_owner"
+    }
+  },
+  "variants": {
+    "default": {
+      "capabilities": [
+        "multi_turn",
+        "hitl_structured"
+      ]
+    }
+  },
+  "packs": [],
+  "suites": []
+}

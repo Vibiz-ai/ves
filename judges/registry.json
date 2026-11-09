@@ -1,0 +1,6 @@
+{
+  "schema_version": "ves-judge-registry/1",
+  "note": "STANDARD §4.4: at VES-1.0 no judge dimension is admitted. Entries are added only by the §4.3 procedure (amendment row required).",
+  "j1_candidate": "google/gemini-3.8-flash",
+  "admitted": []
+}

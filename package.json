@@ -1,0 +1,81 @@
+{
+  "name": "ves-evals",
+  "version": "0.1.0",
+  "private": false,
+  "description": "Framework-agnostic evals for LLM agents that grade what the agent actually did: tool calls and approvals recorded by the harness, simulated personas, pass^k with confidence intervals, and a deploy gate for CI. Local-first, no telemetry.",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Vibiz-ai/ves.git"
+  },
+  "homepage": "https://github.com/Vibiz-ai/ves#readme",
+  "bugs": {
+    "url": "https://github.com/Vibiz-ai/ves/issues"
+  },
+  "keywords": [
+    "llm",
+    "agents",
+    "evals",
+    "evaluation",
+    "ai-agents",
+    "mcp",
+    "tool-calling",
+    "human-in-the-loop",
+    "prompt-injection",
+    "ci",
+    "deploy-gate",
+    "statistics",
+    "confidence-intervals",
+    "agent-evals",
+    "llm-evaluation",
+    "user-simulation",
+    "personas",
+    "pass-at-k",
+    "vertex-ai",
+    "gemini",
+    "claude"
+  ],
+  "type": "module",
+  "engines": {
+    "node": ">=22.18"
+  },
+  "bin": {
+    "ves": "bin/ves.mjs"
+  },
+  "scripts": {
+    "test": "node --import ./test/setup.ts --test \"test/**/*.test.ts\"",
+    "typecheck": "tsc -p tsconfig.json",
+    "demo": "node src/cli.ts run --config examples/plain-node/ves.config.json --tier smoke --connection mock --out results",
+    "demo:personas": "node src/cli.ts run --config examples/personas/ves.config.json --tier smoke --connection mock --out results",
+    "examples": "node examples/run-all.mjs",
+    "validate": "node src/cli.ts validate --profile vibiz",
+    "smoke:mock": "node src/cli.ts run --profile vibiz --tier smoke --connection mock --out results",
+    "release:mock": "node src/cli.ts run --profile vibiz --tier release --connection mock --out results"
+  },
+  "files": [
+    "bin/",
+    "src/",
+    "schemas/",
+    "packs/",
+    "examples/",
+    "!examples/**/.ves-ledger.jsonl",
+    "integrations/",
+    "judges/",
+    "protocol/",
+    "baselines/",
+    "semconv.lock",
+    "tools.lock",
+    "ui/server/",
+    "ui/dist/",
+    "README.md",
+    "STANDARD.md",
+    "DESIGN-agnostic.md",
+    "CHANGELOG.md",
+    "SECURITY.md",
+    "LICENSE"
+  ],
+  "devDependencies": {
+    "@types/node": "22.20.5",
+    "typescript": "5.9.3"
+  }
+}

@@ -1,0 +1,77 @@
+name: VES eval gate
+description: Run VES evals on your agent, gate the PR, comment the result card, store the baseline.
+branding: { icon: check-circle, color: green }
+inputs:
+  config:            { description: Path to ves.config.json, default: ves.config.json }
+  working-directory: { description: Repo dir holding the config, default: . }
+  tier:              { description: 'auto | smoke | release | research', default: auto }
+  packs:             { description: Comma list to override config packs, default: '' }
+  variants:          { description: 'auto | comma list', default: auto }
+  trigger:           { description: 'auto | pr | deploy | nightly | manual', default: auto }
+  suite-from:        { description: 'base | head (base = run the base branch cases against the PR agent)', default: base }
+  baseline:          { description: 'auto | artifact | run-base | none | <path>', default: auto }
+  comment:           { description: Upsert one PR comment, default: 'true' }
+  fail-on:           { description: 'block (BLOCK or INVALID fails) | invalid | never', default: block }
+  artifact-name:     { description: Results artifact name (also the baseline lookup name), default: ves-results }
+  node-version:      { description: Node for the harness (>= 22.18), default: '22' }
+  github-token:      { description: Token for comments and artifact lookup, default: '${{ github.token }}' }
+outputs:
+  verdict:     { description: PASS | BLOCK | INVALID | REPORT_ONLY, value: '${{ steps.run.outputs.verdict }}' }
+  decided-by:  { description: First rule that fired, value: '${{ steps.run.outputs.decided_by }}' }
+  run-dir:     { description: Results directory, value: '${{ steps.run.outputs.run_dir }}' }
+  comment-url: { description: PR comment URL, value: '${{ steps.comment.outputs.url }}' }
+runs:
+  using: composite
+  steps:
+    - uses: actions/setup-node@v4
+      with: { node-version: '${{ inputs.node-version }}' }
+    - id: ctx
+      shell: bash
+      run: node "$GITHUB_ACTION_PATH/../../src/cli.ts" ci context --github >> "$GITHUB_OUTPUT"
+      env: { INPUT_TIER: '${{ inputs.tier }}', INPUT_TRIGGER: '${{ inputs.trigger }}', INPUT_SUITE_FROM: '${{ inputs.suite-from }}',
+             INPUT_CONFIG: '${{ inputs.config }}', INPUT_WORKING_DIRECTORY: '${{ inputs.working-directory }}',
+             VES_ACTION_REF: '${{ github.action_ref }}', GH_TOKEN: '${{ inputs.github-token }}' }
+      # emits: trigger, tier, change_class, base_sha, head_sha, suite_root (base worktree or head), is_fork, first_run,
+      # harness_sha, new_cases, new_case_files (absolute head paths, run as advisory extras); also writes $RUNNER_TEMP/ves-context.json for the later steps
+    - id: baseline
+      if: steps.ctx.outputs.trigger == 'pr' && inputs.baseline != 'none'
+      shell: bash
+      run: node "$GITHUB_ACTION_PATH/../../src/cli.ts" ci baseline --mode '${{ inputs.baseline }}' --artifact '${{ inputs.artifact-name }}' >> "$GITHUB_OUTPUT"
+      env: { GH_TOKEN: '${{ inputs.github-token }}' }
+      # gh run list --workflow <this workflow file> --branch <base> --status success -L 5 --json databaseId
+      # gh run download <id> -n <artifact> -D $RUNNER_TEMP/ves-baseline ; hygiene-check; else run-base fallback
+    - id: run
+      shell: bash
+      working-directory: ${{ inputs.working-directory }}
+      run: |
+        set +e
+        node "$GITHUB_ACTION_PATH/../../src/cli.ts" run --config '${{ inputs.config }}' --suite-root '${{ steps.ctx.outputs.suite_root }}' \
+          --trigger '${{ steps.ctx.outputs.trigger }}' --tier '${{ steps.ctx.outputs.tier }}' --change-class '${{ steps.ctx.outputs.change_class }}' \
+          --target '${{ steps.ctx.outputs.head_sha }}' --baseline '${{ steps.baseline.outputs.dir || 'none' }}' \
+          ${{ inputs.packs != '' && format('--packs {0}', inputs.packs) || '' }} --variants '${{ inputs.variants }}' \
+          --new-cases '${{ steps.ctx.outputs.new_cases }}' --extra-cases '${{ steps.ctx.outputs.new_case_files }}' \
+          --baseline-source '${{ steps.baseline.outputs.source || 'none' }}' \
+          ${{ (steps.ctx.outputs.is_fork == 'true' || steps.ctx.outputs.first_run == 'true') && '--report-only' || '' }} \
+          ${{ steps.ctx.outputs.is_fork == 'true' && '--connection mock' || '' }} \
+          --out "$RUNNER_TEMP/ves-results" --json > "$RUNNER_TEMP/ves-run.json"
+        code=$?
+        node "$GITHUB_ACTION_PATH/../../src/cli.ts" ci outputs --from "$RUNNER_TEMP/ves-run.json" --exit "$code" >> "$GITHUB_OUTPUT"
+      env: { VES_EVALS_SHA: '${{ steps.ctx.outputs.harness_sha }}', VES_HARNESS_SOURCE: action }
+    - shell: bash
+      if: always() && steps.run.outputs.run_dir != ''
+      run: |
+        node "$GITHUB_ACTION_PATH/../../src/cli.ts" report --run '${{ steps.run.outputs.run_dir }}' --format summary >> "$GITHUB_STEP_SUMMARY"
+        node "$GITHUB_ACTION_PATH/../../src/cli.ts" report --run '${{ steps.run.outputs.run_dir }}' --format annotations
+    - id: comment
+      if: always() && inputs.comment == 'true' && github.event_name == 'pull_request' && steps.ctx.outputs.is_fork != 'true' && steps.run.outputs.run_dir != ''
+      shell: bash
+      run: node "$GITHUB_ACTION_PATH/../../src/cli.ts" ci comment --run '${{ steps.run.outputs.run_dir }}' --run-url "$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID" >> "$GITHUB_OUTPUT"
+      env: { GH_TOKEN: '${{ inputs.github-token }}' }
+      # renders --format pr; finds an existing comment starting with '<!-- ves:pr-comment project=<project> -->'
+      # via `gh api repos/{o}/{r}/issues/{n}/comments --paginate`; PATCH it, else POST. Never more than one per project.
+    - uses: actions/upload-artifact@v4
+      if: always() && steps.run.outputs.run_dir != ''
+      with: { name: '${{ inputs.artifact-name }}', path: '${{ runner.temp }}/ves-results', retention-days: 90, if-no-files-found: warn }
+    - shell: bash
+      if: always()
+      run: node "$GITHUB_ACTION_PATH/../../src/cli.ts" ci exit --verdict '${{ steps.run.outputs.verdict }}' --fail-on '${{ inputs.fail-on }}'

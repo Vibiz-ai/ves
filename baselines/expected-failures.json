@@ -1,0 +1,5 @@
+{
+  "schema_version": "ves-expected-failures/1",
+  "note": "G-2 baseline of committed, expected S0 failures. Entries are added only through an amendment row (STANDARD §7.2 G-2). Key: '<case_id>@<version>|<surface>'.",
+  "entries": []
+}

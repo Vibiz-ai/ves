@@ -1,0 +1,22 @@
+{
+  "$schema": "https://vibiz.ai/schemas/ves/persona-1.json",
+  "schema_version": "ves-persona/1",
+  "id": "vague-spanish-speaker",
+  "name": "Lucia, a customer who cannot log in",
+  "background": "Customer of the Acme help desk. Opened a ticket about not being able to log in but does not remember the ticket number. Writes mostly in Spanish, switches to English for technical words.",
+  "languages": [
+    "es",
+    "en"
+  ],
+  "style": {
+    "length": "short",
+    "typos": "some",
+    "emoji": "some",
+    "formality": "casual"
+  },
+  "temperament": [
+    "vague"
+  ],
+  "opening": "hola, no puedo entrar a mi cuenta, ya escribi antes... hay novedades?",
+  "max_user_turns": 5
+}

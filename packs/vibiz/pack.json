@@ -1,0 +1,11 @@
+{
+  "schema_version": "ves-pack/1",
+  "id": "vibiz",
+  "version": "1.0.0",
+  "released": "2026-11-06",
+  "title": "Vibiz (example production profile)",
+  "purpose": "An example production profile: the VES-1 seed suites for Vibiz's agent (eve/*, gateway/*, mcp-direct/*) over the fictional Lumen Yoga fixtures. Runs through the v1 mock adapter and sim with exact v1 semantics (`ves run --profile vibiz`). The generic packs also apply to Vibiz through catalog.v1.json converted by migrate-v1.ts.",
+  "requires": { "profile": "vibiz" },
+  "cases": ["cases/smoke", "cases/safety"],
+  "profile": "profile.json"
+}

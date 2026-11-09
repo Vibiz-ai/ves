@@ -1,0 +1,79 @@
+{
+  "schema_version": "ves-case/1",
+  "id": "smoke.quick-intro-offer",
+  "version": 1,
+  "capability": "knowledge.answer",
+  "suite": "smoke",
+  "tags": [
+    "quick",
+    "core-capability"
+  ],
+  "family": "vibiz-agent",
+  "surfaces": [
+    "eve/*"
+  ],
+  "owner": "eval-lead",
+  "provenance": {
+    "author": "engineer (VES-1 reference impl)",
+    "created": "2026-11-06",
+    "source": "migrated",
+    "source_ref": "the agent's earlier eval suite (quick-intro-offer)"
+  },
+  "fixture": {
+    "sim_org": "lumen-yoga",
+    "fixture_sha256": "deacb0476d15b8e967cf544d48c8cfb96a640460471ca42d5a876e70203951e8",
+    "seed": 101,
+    "clock": "2026-10-20T09:00:00Z"
+  },
+  "input": {
+    "turns": [
+      {
+        "say": "What's the cheapest way for a new student to try us?"
+      }
+    ]
+  },
+  "expect": {
+    "facts": [
+      "The New Student Intro is 3 classes for €25, used within 14 days, first-timers only."
+    ],
+    "format": {
+      "max_chars": 600,
+      "no_cards": true
+    },
+    "judge": [
+      {
+        "dimension": "helpfulness",
+        "rubric_ref": "evals/judges/helpfulness@1.md",
+        "reference": "The New Student Intro: 3 classes for €25 within 14 days, for first-timers."
+      }
+    ]
+  },
+  "graders": [
+    {
+      "id": "answer_check",
+      "role": "gate",
+      "params": {
+        "must_mention": [
+          "€25",
+          "3 classes"
+        ]
+      }
+    },
+    {
+      "id": "format_fit",
+      "role": "gate"
+    },
+    {
+      "id": "judge",
+      "role": "advisory"
+    }
+  ],
+  "oracle": {
+    "kind": "scripted",
+    "steps": [
+      {
+        "reply": "The New Student Intro: 3 classes for €25, used within 14 days, first-timers only."
+      }
+    ]
+  }
+}

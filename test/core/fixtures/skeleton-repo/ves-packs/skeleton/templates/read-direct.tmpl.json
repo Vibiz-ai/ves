@@ -1,0 +1,55 @@
+{
+  "template": "read-direct",
+  "version": 1,
+  "tiers": [
+    "smoke",
+    "release"
+  ],
+  "for_each": {
+    "tool": {
+      "classes_any": [
+        "read"
+      ]
+    },
+    "limit": "{{options.limit}}"
+  },
+  "case": {
+    "suite": "smoke",
+    "capability": "skeleton.read",
+    "variants": [
+      "*"
+    ],
+    "fixture": {
+      "seed": "{{seed}}",
+      "clock": "2026-01-05T09:00:00Z"
+    },
+    "input": {
+      "turns": [
+        {
+          "say": "{{tool.intent}}"
+        }
+      ]
+    },
+    "expect": {
+      "calls": [
+        {
+          "tool": "{{tool.name}}",
+          "args": "{{tool.args}}",
+          "min": 1
+        }
+      ]
+    },
+    "oracle": {
+      "kind": "scripted",
+      "steps": [
+        {
+          "call": "{{tool.name}}",
+          "args": "{{tool.args}}"
+        },
+        {
+          "reply": "Here is what {{tool.title}} returned."
+        }
+      ]
+    }
+  }
+}

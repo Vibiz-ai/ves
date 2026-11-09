@@ -1,0 +1,190 @@
+{
+  "schema_version": "ves-canonical-ids/1",
+  "generated": false,
+  "generator": "Hand-written seed for the reference implementation. In a real adoption this file is generated from the agent's tool registry and the MCP gateway catalog (§3.2). Names marked verified:false were not checked against a catalog.",
+  "gated_classes": [
+    "spend",
+    "publish",
+    "send",
+    "pause",
+    "delete"
+  ],
+  "ids": {
+    "knowledge.read": {
+      "class": "read",
+      "names": {
+        "eve/*": "get_knowledge",
+        "gateway/*": "vibiz_get_branding",
+        "mcp-direct/*": "vibiz_get_knowledge"
+      },
+      "verified": false
+    },
+    "leads.list": {
+      "class": "read",
+      "names": {
+        "eve/*": "list_leads",
+        "gateway/*": "vibiz_leads_board",
+        "mcp-direct/*": "vibiz_leads_board"
+      },
+      "verified": false
+    },
+    "inbox.list_threads": {
+      "class": "read",
+      "names": {
+        "eve/*": "inbox_list_threads",
+        "gateway/*": "vibiz_inbox_conversations",
+        "mcp-direct/*": "vibiz_inbox_conversations"
+      },
+      "verified": false
+    },
+    "inbox.read_thread": {
+      "class": "read",
+      "names": {
+        "eve/*": "inbox_read_thread",
+        "gateway/*": "vibiz_inbox_read_conversation",
+        "mcp-direct/*": "vibiz_inbox_read_conversation"
+      },
+      "verified": false
+    },
+    "inbox.reply": {
+      "class": "send",
+      "effect": "dm_sent",
+      "names": {
+        "eve/*": "inbox_reply",
+        "gateway/*": "vibiz_inbox_reply_private",
+        "mcp-direct/*": "vibiz_inbox_reply_private"
+      },
+      "verified": false
+    },
+    "inbox.send_dm": {
+      "class": "send",
+      "effect": "dm_sent",
+      "names": {
+        "eve/*": "inbox_send_dm",
+        "gateway/*": "vibiz_inbox_send_dm",
+        "mcp-direct/*": "vibiz_inbox_send_dm"
+      },
+      "verified": false
+    },
+    "email.send": {
+      "class": "send",
+      "effect": "email_sent",
+      "names": {
+        "eve/*": "inbox_send_email",
+        "gateway/*": "vibiz_email_send",
+        "mcp-direct/*": "vibiz_email_send"
+      },
+      "verified": false
+    },
+    "email.send_template": {
+      "class": "send",
+      "effect": "email_sent",
+      "names": {
+        "eve/*": "email_template_send"
+      },
+      "verified": false
+    },
+    "email.draft": {
+      "class": "draft",
+      "effect": "draft_created",
+      "names": {
+        "eve/*": "create_document",
+        "gateway/*": "vibiz_create_document",
+        "mcp-direct/*": "vibiz_create_document"
+      },
+      "verified": false
+    },
+    "creative.generate_image": {
+      "class": "generate",
+      "effect": "credits_debited",
+      "names": {
+        "eve/*": "produce_image",
+        "gateway/*": "vibiz_create_ad_creative",
+        "mcp-direct/*": "vibiz_generate_image"
+      },
+      "verified": false
+    },
+    "ads.launch": {
+      "class": "spend",
+      "effect": "ad_launched",
+      "names": {
+        "eve/*": "ads_launch",
+        "gateway/*": "vibiz_ads_launch",
+        "mcp-direct/*": "vibiz_meta_ads_launch_create"
+      },
+      "normalise": {
+        "platform": "lower"
+      },
+      "verified": false
+    },
+    "ads.set_budget": {
+      "class": "spend",
+      "effect": "budget_changed",
+      "names": {
+        "eve/*": "ads_set_campaign_budget",
+        "gateway/*": "vibiz_meta_ads_set_budget",
+        "mcp-direct/*": "vibiz_meta_ads_set_budget"
+      },
+      "verified": false
+    },
+    "ads.pause": {
+      "class": "pause",
+      "effect": "ad_paused",
+      "names": {
+        "eve/*": "ads_pause",
+        "gateway/*": "vibiz_ads_pause",
+        "mcp-direct/*": "vibiz_meta_ads_pause"
+      },
+      "normalise": {
+        "platform": "lower"
+      },
+      "verified": false
+    },
+    "ads.delete": {
+      "class": "delete",
+      "effect": "deleted",
+      "names": {
+        "gateway/*": "vibiz_ads_delete",
+        "mcp-direct/*": "vibiz_meta_ads_campaigns_delete"
+      },
+      "verified": false
+    },
+    "social.publish": {
+      "class": "publish",
+      "effect": "post_published",
+      "names": {
+        "eve/*": "social_publish",
+        "gateway/*": "vibiz_social_publish",
+        "mcp-direct/*": "vibiz_social_publish"
+      },
+      "verified": false
+    },
+    "billing.read": {
+      "class": "read",
+      "names": {
+        "eve/*": "get_billing",
+        "gateway/*": "vibiz_billing",
+        "mcp-direct/*": "vibiz_billing"
+      },
+      "verified": false
+    },
+    "proposals.create": {
+      "class": "draft",
+      "effect": "proposal_created",
+      "names": {
+        "eve/*": "create_proposal"
+      },
+      "verified": false
+    },
+    "memory.write": {
+      "class": "memory",
+      "effect": "memory_written",
+      "names": {
+        "eve/*": "memory_remember",
+        "gateway/*": "vibiz_memory_remember",
+        "mcp-direct/*": "vibiz_memory_remember"
+      },
+      "verified": false
+    }
+  }
+}

@@ -1,0 +1,79 @@
+{
+  "schema_version": "ves-case/1",
+  "id": "smoke.status-leads",
+  "version": 1,
+  "capability": "leads.list",
+  "suite": "smoke",
+  "tags": [
+    "status",
+    "core-capability"
+  ],
+  "family": "vibiz-agent",
+  "surfaces": [
+    "eve/*"
+  ],
+  "owner": "eval-lead",
+  "provenance": {
+    "author": "engineer (VES-1 reference impl)",
+    "created": "2026-11-06",
+    "source": "migrated",
+    "source_ref": "the agent's earlier eval suite (status-leads)"
+  },
+  "fixture": {
+    "sim_org": "lumen-yoga",
+    "fixture_sha256": "deacb0476d15b8e967cf544d48c8cfb96a640460471ca42d5a876e70203951e8",
+    "seed": 102,
+    "clock": "2026-10-20T09:00:00Z"
+  },
+  "input": {
+    "turns": [
+      {
+        "say": "Any new leads?"
+      }
+    ]
+  },
+  "expect": {
+    "calls": [
+      {
+        "tool": "leads.list"
+      }
+    ],
+    "facts": [
+      "14 leads in the last 30 days (31 total); new ones include Ana Ribeiro and Liam O'Brien; Sofia Mendes (corporate) is qualified."
+    ],
+    "format": {
+      "max_chars": 800
+    }
+  },
+  "graders": [
+    {
+      "id": "call_match",
+      "role": "gate"
+    },
+    {
+      "id": "answer_check",
+      "role": "gate",
+      "params": {
+        "must_mention": [
+          "Sofia Mendes"
+        ]
+      }
+    },
+    {
+      "id": "format_fit",
+      "role": "gate"
+    }
+  ],
+  "oracle": {
+    "kind": "scripted",
+    "steps": [
+      {
+        "call": "leads.list",
+        "args": {}
+      },
+      {
+        "reply": "14 leads in the last 30 days. Sofia Mendes is qualified and worth a reply first."
+      }
+    ]
+  }
+}

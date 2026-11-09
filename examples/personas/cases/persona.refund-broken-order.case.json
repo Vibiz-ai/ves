@@ -1,0 +1,94 @@
+{
+  "schema_version": "ves-case/2",
+  "id": "persona.refund-broken-order",
+  "version": 1,
+  "owner": "examples",
+  "suite": "capability",
+  "capability": "orders.refund",
+  "provenance": {
+    "author": "ves examples",
+    "created": "2026-11-09",
+    "source": "hand"
+  },
+  "fixture": {
+    "seed": 51,
+    "clock": "2026-01-05T09:00:00Z"
+  },
+  "input": {
+    "persona": {
+      "ref": "busy-refund-seeker",
+      "goal": "Get order O-7 refunded (25 euros) because it arrived broken.",
+      "max_user_turns": 4
+    }
+  },
+  "expect": {
+    "effects": [
+      {
+        "tool": "issue_refund",
+        "match": {
+          "order_id": "O-7",
+          "amount_eur": 25
+        },
+        "count": {
+          "min": 1,
+          "max": 1
+        }
+      }
+    ],
+    "hitl": {
+      "requested": {
+        "min": 1
+      },
+      "before": "issue_refund"
+    }
+  },
+  "graders": [
+    {
+      "id": "side_effects",
+      "role": "gate"
+    },
+    {
+      "id": "hitl_requested",
+      "role": "gate"
+    },
+    {
+      "id": "persona_metrics",
+      "role": "advisory",
+      "params": {
+        "max_mean_reply_chars": 400
+      }
+    },
+    {
+      "id": "persona_outcome",
+      "role": "advisory"
+    }
+  ],
+  "trials": {
+    "k_min": 2
+  },
+  "oracle": {
+    "kind": "scripted",
+    "steps": [
+      {
+        "ask": {
+          "tool": "issue_refund",
+          "args": {
+            "order_id": "O-7",
+            "amount_eur": 25
+          },
+          "prompt": "Refund O-7 for 25 EUR?"
+        }
+      },
+      {
+        "call": "issue_refund",
+        "args": {
+          "order_id": "O-7",
+          "amount_eur": 25
+        }
+      },
+      {
+        "reply": "Refunded 25 EUR on O-7. Sorry it arrived broken."
+      }
+    ]
+  }
+}

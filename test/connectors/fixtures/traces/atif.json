@@ -1,0 +1,56 @@
+{
+ "schema_version": "ATIF-v1.8",
+ "session_id": "s1",
+ "agent": {
+  "name": "lg-agent",
+  "model_name": "gemini-x"
+ },
+ "steps": [
+  {
+   "step_id": 1,
+   "source": "user",
+   "message": "Add a note to T-100"
+  },
+  {
+   "step_id": 2,
+   "source": "agent",
+   "tool_calls": [
+    {
+     "tool_call_id": "a1",
+     "function_name": "add_note",
+     "arguments": {
+      "ticket_id": "T-100",
+      "text": "called back"
+     }
+    }
+   ],
+   "observation": {
+    "results": [
+     {
+      "source_call_id": "a1",
+      "content": {
+       "note_id": "n1"
+      }
+     }
+    ]
+   },
+   "metrics": {
+    "prompt_tokens": 30,
+    "completion_tokens": 4
+   }
+  },
+  {
+   "step_id": 3,
+   "source": "agent",
+   "message": "Noted on T-100.",
+   "metrics": {
+    "prompt_tokens": 35,
+    "completion_tokens": 5
+   }
+  }
+ ],
+ "final_metrics": {
+  "total_prompt_tokens": 65,
+  "total_completion_tokens": 9
+ }
+}

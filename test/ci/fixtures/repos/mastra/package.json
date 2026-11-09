@@ -1,0 +1,10 @@
+{
+  "name": "mastra-bot",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "@mastra/core": "^0.20",
+    "ai": "^5"
+  }
+}

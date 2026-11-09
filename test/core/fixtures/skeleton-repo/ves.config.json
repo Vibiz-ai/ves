@@ -1,0 +1,231 @@
+{
+  "$schema": "https://vibiz.ai/schemas/ves/config-1.json",
+  "schema_version": "ves-config/1",
+  "project": "heldout-vet-clinic",
+  "agent": {
+    "name": "heldout-vet-clinic",
+    "framework": "plain-python",
+    "connection": {
+      "type": "mock"
+    }
+  },
+  "tools": {
+    "backend": {
+      "type": "sim"
+    },
+    "catalog": [
+      {
+        "name": "fetch_patient_chart",
+        "classes": [
+          "read"
+        ],
+        "title": "Fetch patient chart",
+        "description": "Open an animal patient chart.",
+        "input_schema": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "patient_ref": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "required": [
+            "patient_ref"
+          ]
+        },
+        "output_schema": {
+          "type": "object",
+          "properties": {
+            "summary": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      {
+        "name": "query_vaccination_history",
+        "classes": [
+          "read"
+        ],
+        "description": "Vaccination entries for a patient.",
+        "input_schema": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "patient_ref": {
+              "type": "string",
+              "minLength": 1
+            },
+            "species": {
+              "enum": [
+                "canine",
+                "feline",
+                "equine"
+              ]
+            }
+          },
+          "required": [
+            "patient_ref",
+            "species"
+          ]
+        }
+      },
+      {
+        "name": "annotate_chart",
+        "classes": [
+          "write"
+        ],
+        "description": "Append a clinical remark to a chart.",
+        "input_schema": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "patient_ref": {
+              "type": "string",
+              "minLength": 1
+            },
+            "remark": {
+              "type": "string",
+              "minLength": 3
+            }
+          },
+          "required": [
+            "patient_ref",
+            "remark"
+          ]
+        }
+      },
+      {
+        "name": "book_appointment",
+        "classes": [
+          "write"
+        ],
+        "description": "Reserve a consultation slot.",
+        "input_schema": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "patient_ref": {
+              "type": "string",
+              "minLength": 1
+            },
+            "slot": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          "required": [
+            "patient_ref",
+            "slot"
+          ]
+        }
+      },
+      {
+        "name": "dispatch_sms_reminder",
+        "classes": [
+          "write",
+          "outward"
+        ],
+        "description": "Text the pet owner a reminder.",
+        "input_schema": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "phone": {
+              "type": "string",
+              "pattern": "^\\+?[0-9a-z-]{6,20}$"
+            },
+            "note": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "required": [
+            "phone",
+            "note"
+          ]
+        }
+      },
+      {
+        "name": "bill_owner_account",
+        "classes": [
+          "write",
+          "spend"
+        ],
+        "description": "Charge the owner account for a visit.",
+        "input_schema": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "account_ref": {
+              "type": "string",
+              "minLength": 1
+            },
+            "cents": {
+              "type": "integer",
+              "minimum": 100,
+              "maximum": 100000
+            }
+          },
+          "required": [
+            "account_ref",
+            "cents"
+          ]
+        }
+      },
+      {
+        "name": "purge_medical_record",
+        "classes": [
+          "write",
+          "destructive"
+        ],
+        "description": "Erase a medical record permanently.",
+        "input_schema": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "patient_ref": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "required": [
+            "patient_ref"
+          ]
+        }
+      }
+    ]
+  },
+  "fixtures": {
+    "state": {
+      "fetch_patient_chart": {
+        "summary": "Rex, 4y, healthy"
+      },
+      "query_vaccination_history": [
+        {
+          "vaccine": "rabies",
+          "date": "2025-03-01"
+        }
+      ]
+    },
+    "principal": {
+      "role": "owner",
+      "tenant": "acme",
+      "id": "u_owner"
+    }
+  },
+  "variants": {
+    "default": {
+      "capabilities": [
+        "multi_turn",
+        "hitl_structured"
+      ]
+    }
+  },
+  "packs": [
+    "skeleton"
+  ],
+  "suites": [],
+  "$comment": "Held-out repo for the core acceptance test: the skeleton pack (test-only, class selectors only) expanded over the held-out catalog must pass 100% on MockAgent."
+}

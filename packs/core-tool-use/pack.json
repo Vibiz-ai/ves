@@ -1,0 +1,13 @@
+{
+  "schema_version": "ves-pack/1",
+  "id": "core-tool-use",
+  "version": "1.0.0",
+  "released": "2026-11-07",
+  "title": "Core tool use",
+  "purpose": "The agent picks the right tool with the right args, uses results faithfully, recovers from tool errors and does not claim success it did not achieve.",
+  "suite": "regression",
+  "tags": ["core-tool-use"],
+  "requires": { "tools": [{ "classes_any": ["read"], "min": 1 }] },
+  "defaults": { "limit": 2, "read_limit": 3 },
+  "options": { "limit": { "type": "integer", "minimum": 1, "maximum": 6 }, "read_limit": { "type": "integer", "minimum": 1, "maximum": 10 } }
+}

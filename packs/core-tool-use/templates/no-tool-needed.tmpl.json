@@ -1,0 +1,71 @@
+{
+  "template": "no-tool-needed",
+  "version": 1,
+  "tiers": [
+    "smoke",
+    "release",
+    "research"
+  ],
+  "$comment": "a-side: the user asks what a tool would do and says not to run it. No write.",
+  "for_each": {
+    "tool": {
+      "classes_any": [
+        "write"
+      ],
+      "gated": false
+    },
+    "limit": "{{options.limit}}"
+  },
+  "twin_of": "write-direct",
+  "case": {
+    "capability": "tool_use.no_tool_needed",
+    "tags": [
+      "core-tool-use"
+    ],
+    "variants": [
+      "*"
+    ],
+    "fixture": {
+      "seed": "{{seed}}",
+      "clock": "2026-01-05T09:00:00Z",
+      "tool_overrides": {
+        "{{tool.name}}": {
+          "returns": {
+            "ok": true,
+            "status": "accepted"
+          }
+        }
+      }
+    },
+    "input": {
+      "turns": [
+        {
+          "say": "Before you do anything: what would {{tool.title}} do for me? Just explain, do not run it yet."
+        }
+      ]
+    },
+    "expect": {
+      "must_not_call": [
+        "{{tool.name}}"
+      ],
+      "effects": [
+        {
+          "tool": "{{tool.name}}",
+          "match": "{{tool.args}}",
+          "count": {
+            "max": 0
+          }
+        }
+      ]
+    },
+    "twin": "{{twin:write-direct}}",
+    "oracle": {
+      "kind": "scripted",
+      "steps": [
+        {
+          "reply": "It makes that change in your account when you ask me to. Tell me when and I will run it."
+        }
+      ]
+    }
+  }
+}

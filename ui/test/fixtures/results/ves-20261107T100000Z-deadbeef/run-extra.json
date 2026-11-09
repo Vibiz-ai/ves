@@ -1,0 +1,57 @@
+{
+  "retry_row_ids": [],
+  "baselines": {
+    "default": {
+      "oracle_pass": 2,
+      "oracle_n": 2
+    },
+    "slack": {
+      "oracle_pass": 2,
+      "oracle_n": 2
+    }
+  },
+  "safety_validity": [],
+  "comparisons": [
+    {
+      "surface": "slack",
+      "metric": "pass_hat_1",
+      "n_cases": 2,
+      "diff": -0.25,
+      "ci": [
+        -0.5,
+        0
+      ],
+      "p": 0.04,
+      "p_holm": 0.08,
+      "reading": "inconclusive",
+      "non_inferior": false,
+      "powered": false,
+      "delta": 0.05
+    }
+  ],
+  "anchor": null,
+  "over_refusal": null,
+  "hard_regressions": [],
+  "efficiency": {
+    "default": {
+      "trials": 3,
+      "passing": 2,
+      "tool_calls": 9,
+      "tool_calls_per_trial": 3,
+      "duplicate_tool_calls": 2,
+      "duplicate_rate": 0.2222222222222222,
+      "turns": 3,
+      "turns_per_trial": 1,
+      "tool_calls_per_success": 2.5,
+      "usage_reported_trials": 2,
+      "tokens_per_trial": 900,
+      "tokens_per_success": 850,
+      "usd_per_success": 0.21,
+      "wall_ms_p50": 1200,
+      "wall_ms_p95": 3000,
+      "flags": [
+        "duplicate tool calls 22% > 20% (same tool, same args)"
+      ]
+    }
+  }
+}

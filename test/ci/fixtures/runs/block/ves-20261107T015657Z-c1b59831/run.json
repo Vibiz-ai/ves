@@ -1,0 +1,116 @@
+{
+  "schema_version": "ves-run/2",
+  "run_id": "ves-20261107T015657Z-c1b59831",
+  "ves_version": "1.0.0",
+  "project": "heldout-vet-clinic",
+  "tier": "smoke",
+  "trigger": "manual",
+  "target": {
+    "sha": "2222222222222222222222222222222222222222",
+    "deploy_targets": [],
+    "change_class": 2
+  },
+  "harness": {
+    "evals_sha": "tree:270870cd85f918fbbe580181a13dc8c9e1c5e2d724468f8a14e967f9f302eeae",
+    "package_version": "0.1.0",
+    "semconv_commit": "UNPINNED",
+    "conformance_version": "UNPINNED",
+    "source": "local"
+  },
+  "suite": {
+    "ids": [
+      "skeleton.approve-then-act.bill_owner_account-19dedc",
+      "skeleton.approve-then-act.purge_medical_record-70732e",
+      "skeleton.outsider-no-act.purge_medical_record-70732e",
+      "skeleton.read-direct.fetch_patient_chart-690819",
+      "skeleton.read-direct.query_vaccination_history-5a25cf",
+      "skeleton.reject-no-act.bill_owner_account-19dedc",
+      "skeleton.reject-no-act.purge_medical_record-70732e",
+      "skeleton.write-direct.annotate_chart-deaaeb",
+      "skeleton.write-direct.book_appointment-2f0ffc"
+    ],
+    "version": "a266511786f0f68c96d805776aed3d21055b6ab239ddae0c034cf563ee3ae8fd",
+    "case_count": 9,
+    "fixture_sha256s": [
+      "2093c9e0ff8e5d685e8c40f9fd8c5aab3f60d7f95d237dfd70e330a2f132d566"
+    ]
+  },
+  "surfaces": [
+    "default"
+  ],
+  "adapters": [
+    {
+      "surface": "default",
+      "version": "mock@2.0.0-mock",
+      "routes_sha256": "mock:2.0.0-mock",
+      "diffs_from_prod": [
+        "MOCK connection: no agent and no model in the loop; replays the case oracle (or a baseline behaviour) deterministically",
+        "verdicts from this connection test the harness, graders, packs and gate only; they are not evidence about the agent"
+      ]
+    }
+  ],
+  "judge_config": {
+    "model": null,
+    "prompts": {}
+  },
+  "user_simulator": null,
+  "k": {
+    "default": 1
+  },
+  "seeds": {
+    "bootstrap": 20261025,
+    "cache_salt": "per-trial (t<i>, retry, confirm<j>)"
+  },
+  "comparator": {
+    "run_id": "ves-20261107T015657Z-c6bf67a3",
+    "sha": "1111111111111111111111111111111111111111",
+    "differs_in": []
+  },
+  "cost": {
+    "pool": "smoke",
+    "estimate_point_usd": 0,
+    "estimate_high_usd": 0,
+    "actual_usd": 0,
+    "wall_s": 0
+  },
+  "block_card": null,
+  "status": "valid",
+  "invalid_row_share": 0,
+  "config_sha256": "8754adf3ef5af05147265121e879b684ce5de4cef0f64bd06e6b5a449a19cd36",
+  "catalog_sha256": "2bf3febca31fd6dc381cff053b880c3333fe206acc8107f525458aa2857fa278",
+  "packs": [
+    {
+      "id": "skeleton",
+      "version": "0.1.0",
+      "sha256": "64951115209b83a741d992f590f54a1193514f2f900824de05a7c6d66451ce2c",
+      "cases": 9,
+      "low_realism_intents": 9
+    }
+  ],
+  "connections": {
+    "default": {
+      "kind": "mock",
+      "version": "2.0.0-mock",
+      "role": "agent",
+      "agent": {
+        "name": "mock:oracle",
+        "framework": "ves-mock",
+        "model": "none"
+      }
+    }
+  },
+  "observation": {
+    "default": "ledger"
+  },
+  "conformance": "VES-1",
+  "loosened": [],
+  "notes": [],
+  "baseline": {
+    "source": "path",
+    "run_id": "ves-20261107T015657Z-c6bf67a3",
+    "sha": "1111111111111111111111111111111111111111"
+  },
+  "new_cases": [],
+  "report_only": false,
+  "verdict": "BLOCK"
+}

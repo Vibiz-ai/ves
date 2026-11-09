@@ -1,0 +1,605 @@
+{
+  "schema_version": "ves-profile/1",
+  "id": "vibiz",
+  "$comment": "An example production profile (DESIGN-agnostic §3.6, §4.9): the VES-1 seed suites of Vibiz's agent, kept as data. It holds the surfaces (variants) and their v1 profiles, the auto-expansion table, the canonical-id catalog and its class map, plant locations, deploy targets, the change-class paths and the stub plans. Paths are illustrative of a typical monorepo (app/, agent/, mcp-gateway/, ios/), not a real layout. The generic core reads this file only when a run uses --profile vibiz or loads ves-case/1 files.",
+  "fixture_root": "fixtures",
+  "catalog": "catalog.v1.json",
+  "suites": {
+    "smoke": [
+      "cases/smoke"
+    ],
+    "release": [
+      "cases/smoke",
+      "cases/safety"
+    ],
+    "research": [
+      "cases/smoke",
+      "cases/safety"
+    ]
+  },
+  "deploy_targets": [
+    "app",
+    "agent",
+    "gateway",
+    "ios"
+  ],
+  "gate": {
+    "safety_observation": "ledger"
+  },
+  "harness": {
+    "require_commit_sha": true
+  },
+  "class_map": {
+    "read": {
+      "classes": [
+        "read"
+      ]
+    },
+    "draft": {
+      "classes": [
+        "write"
+      ]
+    },
+    "generate": {
+      "classes": [
+        "write"
+      ]
+    },
+    "memory": {
+      "classes": [
+        "write"
+      ]
+    },
+    "spend": {
+      "classes": [
+        "write",
+        "spend"
+      ]
+    },
+    "publish": {
+      "classes": [
+        "write",
+        "outward"
+      ]
+    },
+    "send": {
+      "classes": [
+        "write",
+        "outward"
+      ]
+    },
+    "pause": {
+      "classes": [
+        "write"
+      ],
+      "gated": true
+    },
+    "delete": {
+      "classes": [
+        "write",
+        "destructive"
+      ]
+    }
+  },
+  "plant_locations": {
+    "inbox_dm": "inbox.list_threads",
+    "email_thread": "inbox.list_threads",
+    "comment": "inbox.list_threads",
+    "knowledge_doc": "knowledge.read",
+    "memory": "knowledge.read",
+    "web_page": "web.fetch",
+    "tool_result": "$first_read_tool"
+  },
+  "principal_map": {
+    "owner": "owner",
+    "teammate": "member",
+    "non_owner": "outsider"
+  },
+  "explicit_only": [
+    "eve/autopilot",
+    "eve/web-ui"
+  ],
+  "variants": {
+    "eve/web": {
+      "family": "vibiz-agent",
+      "caps": [
+        "multi_turn",
+        "streaming",
+        "card_render",
+        "ask_mode",
+        "write_tools",
+        "spend_tools",
+        "file_upload"
+      ],
+      "approval": "chat",
+      "host": "vibiz",
+      "formatter": "plain",
+      "routes": [
+        "agent/agent.ts",
+        "agent/channels/web.ts"
+      ],
+      "modelInLoop": true
+    },
+    "eve/web-ui": {
+      "family": "vibiz-agent",
+      "caps": [
+        "multi_turn",
+        "streaming",
+        "card_render",
+        "ask_mode",
+        "write_tools",
+        "spend_tools"
+      ],
+      "approval": "chat",
+      "host": "vibiz",
+      "formatter": "plain",
+      "routes": [
+        "app/chat/",
+        "agent/agent.ts"
+      ],
+      "modelInLoop": true
+    },
+    "eve/slack": {
+      "family": "vibiz-agent",
+      "caps": [
+        "multi_turn",
+        "write_tools",
+        "spend_tools"
+      ],
+      "approval": "chat",
+      "host": "vibiz",
+      "formatter": "slack-mrkdwn",
+      "routes": [
+        "app/webhooks/slack/",
+        "agent/channels/slack.ts"
+      ],
+      "modelInLoop": true
+    },
+    "eve/whatsapp": {
+      "family": "vibiz-agent",
+      "caps": [
+        "multi_turn",
+        "write_tools",
+        "spend_tools"
+      ],
+      "approval": "chat",
+      "host": "vibiz",
+      "formatter": "split-1000",
+      "routes": [
+        "app/webhooks/whatsapp/",
+        "agent/channels/whatsapp.ts"
+      ],
+      "modelInLoop": true
+    },
+    "eve/imessage": {
+      "family": "vibiz-agent",
+      "caps": [
+        "multi_turn",
+        "write_tools",
+        "spend_tools"
+      ],
+      "approval": "chat",
+      "host": "vibiz",
+      "formatter": "split-1000",
+      "routes": [
+        "app/webhooks/imessage/",
+        "agent/channels/imessage.ts"
+      ],
+      "modelInLoop": true
+    },
+    "eve/autopilot": {
+      "family": "vibiz-agent",
+      "caps": [
+        "schedule_clock",
+        "write_tools",
+        "spend_tools"
+      ],
+      "approval": "chat",
+      "host": "none",
+      "formatter": "plain",
+      "routes": [
+        "agent/schedules/",
+        "agent/supervisor/"
+      ],
+      "modelInLoop": true
+    },
+    "gateway/contract": {
+      "family": "contract",
+      "caps": [
+        "write_tools",
+        "spend_tools"
+      ],
+      "approval": "token",
+      "host": "none",
+      "formatter": "plain",
+      "routes": [
+        "mcp-gateway/index.ts",
+        "mcp-gateway/approval.ts",
+        "mcp-gateway/catalog/"
+      ],
+      "modelInLoop": false
+    },
+    "mcp-direct/contract": {
+      "family": "contract",
+      "caps": [
+        "write_tools",
+        "spend_tools"
+      ],
+      "approval": "token",
+      "host": "none",
+      "formatter": "plain",
+      "routes": [
+        "app/mcp/"
+      ],
+      "modelInLoop": false
+    },
+    "gateway/claude-sim": {
+      "family": "tool-surface",
+      "caps": [
+        "multi_turn",
+        "host_approval",
+        "views",
+        "write_tools",
+        "spend_tools"
+      ],
+      "approval": "token",
+      "host": "claude",
+      "clientInfo": "claude-ai",
+      "views": true,
+      "formatter": "plain",
+      "routes": [
+        "mcp-gateway/index.ts",
+        "mcp-gateway/client-family.ts"
+      ],
+      "modelInLoop": true
+    },
+    "gateway/openai-sim": {
+      "family": "tool-surface",
+      "caps": [
+        "multi_turn",
+        "host_approval",
+        "write_tools",
+        "spend_tools"
+      ],
+      "approval": "token",
+      "host": "chatgpt",
+      "clientInfo": "openai-mcp",
+      "views": false,
+      "formatter": "plain",
+      "routes": [
+        "mcp-gateway/index.ts",
+        "mcp-gateway/client-family.ts"
+      ],
+      "modelInLoop": true
+    },
+    "gateway/other-sim": {
+      "family": "tool-surface",
+      "caps": [
+        "write_tools",
+        "spend_tools"
+      ],
+      "approval": "token",
+      "host": "other",
+      "clientInfo": "principia",
+      "views": false,
+      "formatter": "plain",
+      "routes": [
+        "mcp-gateway/passthrough.ts",
+        "mcp-gateway/client-family.ts"
+      ],
+      "modelInLoop": false
+    },
+    "mcp-direct/claude-sim": {
+      "family": "tool-surface",
+      "caps": [
+        "multi_turn",
+        "host_approval",
+        "views",
+        "write_tools",
+        "spend_tools"
+      ],
+      "approval": "token",
+      "host": "claude",
+      "clientInfo": "claude-ai",
+      "views": true,
+      "formatter": "plain",
+      "routes": [
+        "app/mcp/"
+      ],
+      "modelInLoop": true
+    },
+    "gateway/apps-host": {
+      "family": "tool-surface",
+      "caps": [
+        "views",
+        "card_render",
+        "write_tools"
+      ],
+      "approval": "token",
+      "host": "other",
+      "formatter": "plain",
+      "routes": [
+        "mcp-gateway/views/"
+      ],
+      "modelInLoop": false
+    },
+    "mcp-direct/apps-host": {
+      "family": "tool-surface",
+      "caps": [
+        "views",
+        "card_render",
+        "write_tools"
+      ],
+      "approval": "token",
+      "host": "other",
+      "formatter": "plain",
+      "routes": [
+        "app/mcp/views/"
+      ],
+      "modelInLoop": false
+    },
+    "gateway/live-claude": {
+      "family": "tool-surface",
+      "caps": [
+        "multi_turn",
+        "host_approval",
+        "views",
+        "write_tools",
+        "spend_tools"
+      ],
+      "approval": "token",
+      "host": "claude",
+      "formatter": "plain",
+      "routes": [
+        "mcp-gateway/index.ts"
+      ],
+      "modelInLoop": true
+    },
+    "gateway/live-chatgpt": {
+      "family": "tool-surface",
+      "caps": [
+        "multi_turn",
+        "host_approval",
+        "write_tools",
+        "spend_tools"
+      ],
+      "approval": "token",
+      "host": "chatgpt",
+      "formatter": "plain",
+      "routes": [
+        "mcp-gateway/index.ts"
+      ],
+      "modelInLoop": true
+    },
+    "ios/contract": {
+      "family": "contract",
+      "caps": [],
+      "approval": "token",
+      "host": "none",
+      "formatter": "plain",
+      "routes": [
+        "ios/"
+      ],
+      "modelInLoop": false
+    },
+    "partner/contract": {
+      "family": "contract",
+      "caps": [
+        "write_tools"
+      ],
+      "approval": "token",
+      "host": "none",
+      "formatter": "plain",
+      "routes": [
+        "app/partner-api/"
+      ],
+      "modelInLoop": false
+    },
+    "voice/contract": {
+      "family": "contract",
+      "caps": [],
+      "approval": "token",
+      "host": "none",
+      "formatter": "plain",
+      "routes": [
+        "app/webhooks/voice/"
+      ],
+      "modelInLoop": false
+    },
+    "email/probe": {
+      "family": "contract",
+      "caps": [
+        "write_tools"
+      ],
+      "approval": "chat",
+      "host": "none",
+      "formatter": "plain",
+      "routes": [
+        "app/webhooks/email-inbound/"
+      ],
+      "modelInLoop": false
+    }
+  },
+  "auto_expand": {
+    "smoke": {
+      "*": [
+        "eve/web",
+        "eve/slack",
+        "gateway/contract"
+      ],
+      "eve/*": [
+        "eve/web",
+        "eve/slack"
+      ],
+      "gateway/*": [
+        "gateway/contract",
+        "gateway/claude-sim"
+      ],
+      "mcp-direct/*": [
+        "mcp-direct/contract"
+      ]
+    },
+    "release": {
+      "*": [
+        "eve/web",
+        "eve/slack",
+        "gateway/claude-sim",
+        "gateway/openai-sim"
+      ],
+      "eve/*": [
+        "eve/web",
+        "eve/slack",
+        "eve/whatsapp",
+        "eve/imessage"
+      ],
+      "gateway/*": [
+        "gateway/contract",
+        "gateway/claude-sim",
+        "gateway/openai-sim",
+        "gateway/other-sim"
+      ],
+      "mcp-direct/*": [
+        "mcp-direct/contract",
+        "mcp-direct/claude-sim"
+      ]
+    },
+    "research": {
+      "*": [
+        "eve/web",
+        "gateway/live-claude",
+        "gateway/live-chatgpt"
+      ],
+      "eve/*": [
+        "eve/web",
+        "eve/slack",
+        "eve/whatsapp",
+        "eve/imessage",
+        "eve/autopilot"
+      ],
+      "gateway/*": [
+        "gateway/claude-sim",
+        "gateway/openai-sim",
+        "gateway/live-claude",
+        "gateway/live-chatgpt"
+      ],
+      "mcp-direct/*": [
+        "mcp-direct/claude-sim"
+      ]
+    }
+  },
+  "mcp_real": [
+    "gateway/contract",
+    "mcp-direct/contract",
+    "gateway/other-sim"
+  ],
+  "change_classes": {
+    "2": [
+      "agent/**",
+      "mcp-gateway/catalog/**",
+      "mcp-gateway/approval*.ts",
+      "mcp-gateway/client-family.ts",
+      "app/mcp/tools/**",
+      "app/mcp/approval*.ts",
+      "lib/ai/**",
+      "evals/**"
+    ],
+    "1": [
+      "app/webhooks/**",
+      "app/mcp/**",
+      "app/chat/**",
+      "mcp-gateway/**",
+      "ios/**",
+      "app/partner-api/**"
+    ]
+  },
+  "surfaces_for": [
+    {
+      "re": "^agent\\/|^app\\/chat\\/",
+      "surfaces": [
+        "eve/web",
+        "eve/slack"
+      ]
+    },
+    {
+      "re": "slack",
+      "surfaces": [
+        "eve/slack"
+      ]
+    },
+    {
+      "re": "whatsapp",
+      "surfaces": [
+        "eve/whatsapp"
+      ]
+    },
+    {
+      "re": "imessage",
+      "surfaces": [
+        "eve/imessage"
+      ]
+    },
+    {
+      "re": "^agent\\/(schedules|supervisor)\\/",
+      "surfaces": [
+        "eve/autopilot"
+      ]
+    },
+    {
+      "re": "^mcp-gateway\\/",
+      "surfaces": [
+        "gateway/contract",
+        "gateway/claude-sim",
+        "gateway/other-sim"
+      ]
+    },
+    {
+      "re": "^app\\/mcp\\/",
+      "surfaces": [
+        "mcp-direct/contract"
+      ]
+    },
+    {
+      "re": "^ios\\/",
+      "surfaces": [
+        "ios/contract"
+      ]
+    },
+    {
+      "re": "^app\\/partner-api\\/",
+      "surfaces": [
+        "partner/contract"
+      ]
+    },
+    {
+      "re": "^app\\/webhooks\\/voice\\/",
+      "surfaces": [
+        "voice/contract"
+      ]
+    },
+    {
+      "re": "^app\\/webhooks\\/email-inbound\\/",
+      "surfaces": [
+        "email/probe"
+      ]
+    }
+  ],
+  "stub_plans": {
+    "eve/web": "run the agent in eval mode (refused in production) against the recording sim; trajectory from the tool ledger",
+    "eve/web-ui": "drive the chat UI stream end to end (durability cases only)",
+    "eve/slack": "signed Slack Events API payloads to the webhook with the responder pointed at a fake Slack; trajectory from the tool ledger",
+    "eve/whatsapp": "signed payload to the WhatsApp webhook, responder stubbed, split parts captured",
+    "eve/imessage": "payload to the iMessage webhook, responder stubbed, split parts captured",
+    "eve/autopilot": "fire the agent's schedules against the frozen sim clock (advance_clock/wake), no human present",
+    "gateway/claude-sim": "Messages API MCP connector through the VES proxy; paid API: refused in this harness",
+    "gateway/openai-sim": "Responses API mcp tool with require_approval through the VES proxy; paid API: refused",
+    "mcp-direct/claude-sim": "Messages API MCP connector against the direct MCP route; paid API: refused",
+    "gateway/apps-host": "render MCP app views in a basic host, driven by Playwright",
+    "mcp-direct/apps-host": "as gateway/apps-host against the direct MCP route",
+    "gateway/live-claude": "Playwright on a live chat host with a test account; trajectory from the server recorder (research tier only)",
+    "gateway/live-chatgpt": "Playwright on a live chat host with a test account; trajectory from the server recorder (research tier only)",
+    "ios/contract": "UI tests on a simulator plus API contract tests",
+    "partner/contract": "OpenAPI contract check; gated writes must require approval server-side",
+    "voice/contract": "webhook contract tests for the voice routes",
+    "email/probe": "probe: show inbound mail cannot reach a tool loop, or run RT-injection through it"
+  }
+}

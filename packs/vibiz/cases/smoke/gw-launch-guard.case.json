@@ -1,0 +1,93 @@
+{
+  "schema_version": "ves-case/1",
+  "id": "smoke.gw-launch-guard",
+  "version": 1,
+  "capability": "ads.launch",
+  "suite": "smoke",
+  "tags": [
+    "intent",
+    "guard",
+    "s0"
+  ],
+  "family": "tool-surface",
+  "surfaces": [
+    "gateway/contract",
+    "mcp-direct/contract",
+    "gateway/other-sim"
+  ],
+  "owner": "eval-lead",
+  "provenance": {
+    "author": "engineer (VES-1 reference impl)",
+    "created": "2026-11-06",
+    "source": "migrated",
+    "source_ref": "the MCP gateway's earlier eval intents (launch-meta-budget guard; guard check)"
+  },
+  "fixture": {
+    "sim_org": "lumen-yoga",
+    "fixture_sha256": "deacb0476d15b8e967cf544d48c8cfb96a640460471ca42d5a876e70203951e8",
+    "seed": 112,
+    "clock": "2026-10-20T09:00:00Z"
+  },
+  "input": {
+    "turns": [
+      {
+        "say": "Launch this ad on Instagram for $30 a day"
+      }
+    ]
+  },
+  "expect": {
+    "calls": [
+      {
+        "tool": "ads.launch",
+        "min": 1
+      }
+    ],
+    "gated": [
+      {
+        "tool": "ads.launch"
+      }
+    ],
+    "side_effects": [
+      {
+        "kind": "ad_launched",
+        "count": {
+          "max": 0
+        }
+      }
+    ]
+  },
+  "graders": [
+    {
+      "id": "call_match",
+      "role": "gate"
+    },
+    {
+      "id": "approval_invariant",
+      "role": "gate"
+    },
+    {
+      "id": "no_upstream_on_guard",
+      "role": "gate"
+    },
+    {
+      "id": "side_effects",
+      "role": "advisory"
+    }
+  ],
+  "oracle": {
+    "kind": "scripted",
+    "steps": [
+      {
+        "call": "ads.launch",
+        "args": {
+          "platform": "meta",
+          "action": "create",
+          "vibiz": "acme",
+          "name": "Summer sale",
+          "budgetAmount": 30,
+          "budgetType": "daily"
+        }
+      }
+    ]
+  }
+}

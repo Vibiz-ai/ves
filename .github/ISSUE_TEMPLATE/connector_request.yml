@@ -1,0 +1,39 @@
+name: Connector or framework request
+description: Ask for a new connector, or for a framework bridge to be added or verified.
+labels: [connector]
+body:
+  - type: input
+    id: framework
+    attributes:
+      label: Framework, runtime or protocol
+      placeholder: "e.g. Google ADK (Python), AutoGen, a Go agent over gRPC"
+    validations:
+      required: true
+  - type: textarea
+    id: how
+    attributes:
+      label: How the agent calls tools today
+      description: MCP client, native function calling, HTTP, something else. Link the docs if you can.
+    validations:
+      required: true
+  - type: textarea
+    id: approvals
+    attributes:
+      label: How approvals or human-in-the-loop work
+      description: VES maps the framework's own approval mechanism; it never adds one your production agent lacks.
+  - type: dropdown
+    id: existing
+    attributes:
+      label: Have you tried an existing connector?
+      options: ["No", "Yes: command (JSONL bridge)", "Yes: http", "Yes: openai-chat", "Yes: mcp", "Yes: trace"]
+  - type: textarea
+    id: gap
+    attributes:
+      label: What is missing
+      description: Why the existing connectors are not enough for this case.
+  - type: checkboxes
+    id: help
+    attributes:
+      label: Contribution
+      options:
+        - label: I can help write or test the bridge

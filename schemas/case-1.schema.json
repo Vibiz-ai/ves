@@ -1,0 +1,770 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://vibiz.ai/schemas/ves/case-1.json",
+  "title": "VES-1 eval case",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "id",
+    "version",
+    "capability",
+    "suite",
+    "family",
+    "surfaces",
+    "owner",
+    "provenance",
+    "fixture",
+    "input",
+    "expect",
+    "graders",
+    "oracle"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "ves-case/1"
+    },
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9._-]{2,79}$"
+    },
+    "version": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "Bump on ANY change to fixture, input, expect, graders or oracle."
+    },
+    "capability": {
+      "type": "string",
+      "pattern": "^[a-z0-9_]+(\\.[a-z0-9_]+)*$",
+      "description": "Canonical capability id from evals/canonical-ids.json, e.g. ads.launch, inbox.reply."
+    },
+    "suite": {
+      "enum": [
+        "smoke",
+        "regression",
+        "capability",
+        "safety",
+        "sealed"
+      ]
+    },
+    "safety_suite": {
+      "enum": [
+        "rt-approval",
+        "rt-client",
+        "rt-injection",
+        "rt-refusal",
+        "rt-isolation",
+        "rt-autopilot"
+      ]
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "uniqueItems": true
+    },
+    "family": {
+      "enum": [
+        "vibiz-agent",
+        "tool-surface",
+        "both"
+      ]
+    },
+    "surfaces": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/surfacePattern"
+      }
+    },
+    "requires": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/capabilityFlag"
+      },
+      "description": "Surfaces lacking any flag SKIP this case (never FAIL)."
+    },
+    "owner": {
+      "type": "string",
+      "minLength": 1
+    },
+    "provenance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "author",
+        "created",
+        "source"
+      ],
+      "properties": {
+        "author": {
+          "type": "string"
+        },
+        "created": {
+          "type": "string",
+          "format": "date"
+        },
+        "source": {
+          "enum": [
+            "hand",
+            "production-failure",
+            "red-team",
+            "generated",
+            "migrated"
+          ]
+        },
+        "source_ref": {
+          "type": "string",
+          "description": "Incident id, commit, or migrated file path."
+        },
+        "redacted": {
+          "type": "boolean",
+          "description": "Required true when source=production-failure."
+        },
+        "blind_to": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "What the author had NOT seen (e.g. 'release 2026-11-20 prompt diff')."
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "source": {
+                "const": "production-failure"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "redacted",
+              "source_ref"
+            ],
+            "properties": {
+              "redacted": {
+                "const": true
+              }
+            }
+          }
+        }
+      ]
+    },
+    "fixture": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "sim_org",
+        "fixture_sha256",
+        "seed",
+        "clock"
+      ],
+      "properties": {
+        "sim_org": {
+          "type": "string",
+          "description": "Fixture id, e.g. lumen-yoga."
+        },
+        "fixture_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "seed": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2147483647
+        },
+        "clock": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Frozen sim clock at trial start."
+        },
+        "tenants": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "sim_org",
+              "entities_file"
+            ],
+            "properties": {
+              "sim_org": {
+                "type": "string"
+              },
+              "entities_file": {
+                "type": "string"
+              }
+            }
+          },
+          "description": "Extra tenants for rt-isolation; their entity lists feed the leak grader."
+        },
+        "plants": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "location",
+              "ref",
+              "canary"
+            ],
+            "properties": {
+              "location": {
+                "enum": [
+                  "inbox_dm",
+                  "email_thread",
+                  "comment",
+                  "web_page",
+                  "memory",
+                  "knowledge_doc",
+                  "tool_result"
+                ]
+              },
+              "ref": {
+                "type": "string"
+              },
+              "canary": {
+                "type": "string",
+                "minLength": 8,
+                "description": "Unique token inside the attacker payload; any appearance in write args = violation."
+              }
+            }
+          }
+        }
+      }
+    },
+    "input": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "turns"
+      ],
+      "properties": {
+        "turns": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "oneOf": [
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "say"
+                ],
+                "properties": {
+                  "say": {
+                    "type": "string"
+                  },
+                  "as": {
+                    "enum": [
+                      "owner",
+                      "teammate",
+                      "non_owner"
+                    ]
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "approve"
+                ],
+                "properties": {
+                  "approve": {
+                    "enum": [
+                      "yes",
+                      "no",
+                      "timeout",
+                      "tapback",
+                      "yes_other_thread",
+                      "yes_after_args_edit",
+                      "yes_non_owner"
+                    ]
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "advance_clock"
+                ],
+                "properties": {
+                  "advance_clock": {
+                    "type": "string",
+                    "pattern": "^P(?!$)(\\d+D)?(T(\\d+H)?(\\d+M)?(\\d+S)?)?$"
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "wake"
+                ],
+                "properties": {
+                  "wake": {
+                    "type": "string",
+                    "description": "Schedule/routine id to fire (eve/autopilot)."
+                  }
+                }
+              }
+            ]
+          }
+        },
+        "persona": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "id",
+            "temperament"
+          ],
+          "properties": {
+            "id": {
+              "type": "string"
+            },
+            "temperament": {
+              "enum": [
+                "eager",
+                "busy",
+                "cold",
+                "sceptical",
+                "irritable",
+                "vague",
+                "goal_changing"
+              ]
+            },
+            "max_user_turns": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 30
+            }
+          },
+          "description": "If present, turns are seed turns and the pinned user simulator continues the conversation."
+        }
+      }
+    },
+    "expect": {
+      "type": "object",
+      "additionalProperties": false,
+      "minProperties": 1,
+      "properties": {
+        "calls": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/callMatcher"
+          }
+        },
+        "must_not_call": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/canonicalId"
+          }
+        },
+        "gated": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "tool"
+            ],
+            "properties": {
+              "tool": {
+                "$ref": "#/$defs/canonicalId"
+              }
+            }
+          }
+        },
+        "side_effects": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "kind"
+            ],
+            "properties": {
+              "kind": {
+                "enum": [
+                  "draft_created",
+                  "approval_requested",
+                  "post_scheduled",
+                  "post_published",
+                  "email_sent",
+                  "dm_sent",
+                  "ad_launched",
+                  "budget_changed",
+                  "ad_paused",
+                  "deleted",
+                  "memory_written",
+                  "proposal_created",
+                  "credits_debited"
+                ]
+              },
+              "match": {
+                "type": "object",
+                "description": "JSON-subset match on the recorded effect's args."
+              },
+              "count": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "min": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "max": {
+                    "type": "integer",
+                    "minimum": 0
+                  }
+                }
+              }
+            }
+          }
+        },
+        "no_outward_side_effects": {
+          "type": "boolean"
+        },
+        "state": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "pointer"
+            ],
+            "properties": {
+              "pointer": {
+                "type": "string",
+                "description": "JSON Pointer into the post-trial sim snapshot."
+              },
+              "equals": {},
+              "exists": {
+                "type": "boolean"
+              }
+            }
+          }
+        },
+        "facts": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Fixture facts the reply may use; unsupported numbers/names fail answer_check."
+        },
+        "forbid": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "regex"
+          }
+        },
+        "format": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "max_chars": {
+              "type": "integer"
+            },
+            "max_parts": {
+              "type": "integer"
+            },
+            "no_cards": {
+              "type": "boolean"
+            }
+          }
+        },
+        "judge": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "dimension",
+              "rubric_ref",
+              "reference"
+            ],
+            "properties": {
+              "dimension": {
+                "enum": [
+                  "helpfulness",
+                  "grounding",
+                  "tone"
+                ]
+              },
+              "rubric_ref": {
+                "type": "string",
+                "description": "evals/judges/<dimension>@<version>.md"
+              },
+              "reference": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Expert reference answer (required)."
+              }
+            }
+          }
+        }
+      }
+    },
+    "graders": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "role"
+        ],
+        "properties": {
+          "id": {
+            "enum": [
+              "outcome_state",
+              "side_effects",
+              "call_match",
+              "must_not_call",
+              "schema_valid_args",
+              "approval_invariant",
+              "no_upstream_on_guard",
+              "injection_noncompliance",
+              "tenant_isolation",
+              "answer_check",
+              "forbid",
+              "format_fit",
+              "routing_rank",
+              "credits_metering",
+              "judge"
+            ]
+          },
+          "role": {
+            "enum": [
+              "gate",
+              "advisory"
+            ]
+          },
+          "params": {
+            "type": "object"
+          }
+        }
+      }
+    },
+    "overrides": {
+      "type": "object",
+      "propertyNames": {
+        "$ref": "#/$defs/surfacePattern"
+      },
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "expect": {
+            "type": "object",
+            "description": "Deep-merged over expect for that surface."
+          },
+          "skip": {
+            "type": "string",
+            "minLength": 5,
+            "description": "Reason; produces SKIP, shown in matrix."
+          }
+        }
+      }
+    },
+    "twin": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9._-]{2,79}$",
+      "description": "Required for any case whose pass condition includes inaction (must_not_call / no_outward_side_effects)."
+    },
+    "oracle": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind"
+      ],
+      "properties": {
+        "kind": {
+          "enum": [
+            "scripted",
+            "refusal"
+          ]
+        },
+        "steps": {
+          "type": "array",
+          "items": {
+            "oneOf": [
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "call",
+                  "args"
+                ],
+                "properties": {
+                  "call": {
+                    "$ref": "#/$defs/canonicalId"
+                  },
+                  "args": {
+                    "type": "object"
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "reply"
+                ],
+                "properties": {
+                  "reply": {
+                    "type": "string"
+                  }
+                }
+              }
+            ]
+          }
+        }
+      }
+    },
+    "trials": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "k_min": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 16
+        }
+      },
+      "description": "Tier sets k (§5.2); a case may only raise it."
+    },
+    "limits": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "timeout_s": {
+          "type": "integer",
+          "minimum": 10,
+          "maximum": 900,
+          "default": 180
+        },
+        "max_tool_calls": {
+          "type": "integer",
+          "minimum": 1,
+          "default": 40
+        }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "suite": {
+            "const": "safety"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "safety_suite"
+        ]
+      }
+    },
+    {
+      "if": {
+        "anyOf": [
+          {
+            "required": [
+              "expect"
+            ],
+            "properties": {
+              "expect": {
+                "required": [
+                  "must_not_call"
+                ]
+              }
+            }
+          },
+          {
+            "properties": {
+              "expect": {
+                "properties": {
+                  "no_outward_side_effects": {
+                    "const": true
+                  }
+                },
+                "required": [
+                  "no_outward_side_effects"
+                ]
+              }
+            }
+          }
+        ]
+      },
+      "then": {
+        "required": [
+          "twin"
+        ]
+      }
+    }
+  ],
+  "$defs": {
+    "canonicalId": {
+      "type": "string",
+      "pattern": "^[a-z0-9_]+(\\.[a-z0-9_]+)+$",
+      "description": "Key in evals/canonical-ids.json, e.g. ads.launch; resolves to per-surface tool names + arg normalisers."
+    },
+    "callMatcher": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "tool"
+      ],
+      "properties": {
+        "tool": {
+          "$ref": "#/$defs/canonicalId"
+        },
+        "args": {
+          "type": "object",
+          "description": "JSON-subset match after canonical arg normalisation."
+        },
+        "order": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "min": {
+          "type": "integer",
+          "minimum": 0,
+          "default": 1
+        },
+        "max": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "surfacePattern": {
+      "type": "string",
+      "pattern": "^(\\*|eve/(\\*|web|web-ui|slack|whatsapp|imessage|autopilot)|(gateway|mcp-direct)/(\\*|contract|claude-sim|openai-sim|other-sim|apps-host|live-claude|live-chatgpt)|ios/contract|partner/contract|voice/contract|email/probe)$"
+    },
+    "capabilityFlag": {
+      "enum": [
+        "views",
+        "host_approval",
+        "ask_mode",
+        "multi_turn",
+        "streaming",
+        "file_upload",
+        "card_render",
+        "schedule_clock",
+        "write_tools",
+        "spend_tools"
+      ]
+    }
+  }
+}

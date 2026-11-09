@@ -1,0 +1,36 @@
+# VES eval gate for GitLab CI (DESIGN-agnostic §6.5). `ves init --ci gitlab` writes this file as ves.gitlab-ci.yml
+# with the harness pin filled in; add `include: { local: ves.gitlab-ci.yml }` to your .gitlab-ci.yml.
+# Comments on the MR need a project access token with `api` scope in the masked variable GITLAB_TOKEN.
+# Install your agent's own runtime in before_script (or use your own image) if it is not Node.
+ves:
+  image: node:22
+  stage: test
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+    - if: $CI_PIPELINE_SOURCE == "schedule"
+  variables:
+    GIT_DEPTH: "0"
+    VES_REPO: "https://github.com/<org>/ves.git"   # the harness, pinned below
+    VES_REF: "<40-hex-sha>"                                    # pin by full commit SHA
+    VES_SUBDIR: ""                                             # harness directory inside VES_REPO, if not the root
+  script:
+    - git clone --quiet "$VES_REPO" /tmp/ves-src && git -C /tmp/ves-src checkout --quiet --detach "$VES_REF"
+    - export VES="/tmp/ves-src/${VES_SUBDIR:-.}" VES_EVALS_SHA=$(git -C /tmp/ves-src rev-parse HEAD) VES_HARNESS_SOURCE=action
+    - node "$VES/src/cli.ts" ci context --gitlab > ves.env && source ves.env
+    - node "$VES/src/cli.ts" ci baseline --gitlab --mode auto > ves.base && source ves.base
+      # GET $CI_API_V4_URL/projects/$CI_PROJECT_ID/jobs/artifacts/$CI_DEFAULT_BRANCH/download?job=ves (JOB-TOKEN header)
+    - set +e; node "$VES/src/cli.ts" run --config ves.config.json --suite-root "$VES_SUITE_ROOT" --trigger "$VES_TRIGGER"
+        --tier "$VES_TIER" --change-class "$VES_CHANGE_CLASS" --target "$CI_COMMIT_SHA" --baseline "${VES_BASELINE_DIR:-none}"
+        --new-cases "$VES_NEW_CASES" ${VES_NEW_CASE_FILES:+--extra-cases "$VES_NEW_CASE_FILES"} ${VES_BASELINE_SOURCE:+--baseline-source "$VES_BASELINE_SOURCE"} ${VES_REPORT_ONLY:+--report-only} ${VES_CONNECTION:+--connection "$VES_CONNECTION"}
+        --out ves-results --json > ves-run.json; code=$?; set -e
+    - node "$VES/src/cli.ts" ci outputs --gitlab --from ves-run.json --exit "$code" > ves.out && source ves.out
+    - '[ -n "$VES_RUN_DIR" ] && node "$VES/src/cli.ts" report --run "$VES_RUN_DIR" --format junit > ves-results/junit.xml || true'
+    - '[ -n "$GITLAB_TOKEN" ] && [ -n "$VES_RUN_DIR" ] && node "$VES/src/cli.ts" ci comment --gitlab --run "$VES_RUN_DIR" --run-url "$CI_JOB_URL" || true'
+      # upserts one MR note with the marker via /projects/:id/merge_requests/:iid/notes (needs a project access token)
+    - node "$VES/src/cli.ts" ci exit --verdict "$VES_VERDICT" --fail-on "${VES_FAIL_ON:-block}"
+  artifacts:
+    when: always
+    paths: [ves-results/]
+    reports: { junit: ves-results/junit.xml }
+    expire_in: 90 days

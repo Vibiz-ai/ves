@@ -1,0 +1,8 @@
+# STUB (STANDARD §2.2, §11.2). Pinned external tools. Fill in at phase 2.
+@modelcontextprotocol/conformance=UNPINNED
+@modelcontextprotocol/inspector=UNPINNED
+eve=0.79.2
+# examples/ framework pin policy (DESIGN-agnostic §1.9, §7.1 item 12): every bridge under examples/<id>/ pins its
+# framework to an exact version in that example's own lockfile (package-lock.json / uv.lock / requirements.txt with
+# ==). The API names in DESIGN §1.9 are checked against that pinned version by the connectors package; a bump is a
+# Class 2 change to the example and is logged here as `example.<id>=<framework>@<version>`. No example is pinned yet.

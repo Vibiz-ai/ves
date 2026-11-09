@@ -1,0 +1,10 @@
+{
+  "name": "ai-bot",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "ai": "^6.0.0",
+    "@ai-sdk/openai": "^2"
+  }
+}

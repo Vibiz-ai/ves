@@ -1,0 +1,8 @@
+[project]
+name = "acme-support"
+version = "0.1.0"
+keywords = ["mcp", "agents"]
+dependencies = [
+  "openai-agents>=0.3",
+  "httpx",
+]

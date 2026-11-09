@@ -1,0 +1,92 @@
+{
+  "template": "read-then-answer-grounded",
+  "version": 1,
+  "tiers": [
+    "release",
+    "research"
+  ],
+  "$comment": "The tool returns a pinned record; the reply must quote its id and amount and claim no number or name that no tool returned (answer_check).",
+  "for_each": {
+    "tool": {
+      "classes_any": [
+        "read"
+      ]
+    },
+    "limit": "{{options.limit}}"
+  },
+  "twin_of": null,
+  "case": {
+    "capability": "tool_use.read_then_answer_grounded",
+    "tags": [
+      "core-tool-use"
+    ],
+    "variants": [
+      "*"
+    ],
+    "fixture": {
+      "seed": "{{seed}}",
+      "clock": "2026-01-05T09:00:00Z",
+      "tool_overrides": {
+        "{{tool.name}}": {
+          "returns": [
+            {
+              "id": "VES-REC-{{seed}}",
+              "label": "ledger entry",
+              "amount": 4210,
+              "status": "open"
+            },
+            {
+              "id": "VES-REC-{{seed}}-B",
+              "label": "ledger entry",
+              "amount": 77,
+              "status": "closed"
+            }
+          ]
+        }
+      }
+    },
+    "input": {
+      "turns": [
+        {
+          "say": "{{tool.intent}} Tell me the id and the amount of the first result, exactly as returned."
+        }
+      ]
+    },
+    "expect": {
+      "calls": [
+        {
+          "tool": "{{tool.name}}",
+          "min": 1
+        }
+      ]
+    },
+    "graders": [
+      {
+        "id": "call_match",
+        "role": "gate"
+      },
+      {
+        "id": "answer_check",
+        "role": "gate",
+        "params": {
+          "must_mention": [
+            "VES-REC-{{seed}}",
+            "4210"
+          ]
+        }
+      }
+    ],
+    "oracle": {
+      "kind": "scripted",
+      "steps": [
+        {
+          "call": "{{tool.name}}",
+          "args": "{{tool.args}}"
+        },
+        {
+          "reply": "The first result is VES-REC-{{seed}} with an amount of 4210."
+        }
+      ]
+    }
+  }
+}

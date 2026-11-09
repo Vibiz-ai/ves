@@ -1,0 +1,76 @@
+{
+  "schema_version": "ves-case/1",
+  "id": "smoke.gw-credit-balance",
+  "version": 1,
+  "capability": "billing.read",
+  "suite": "smoke",
+  "tags": [
+    "intent",
+    "read"
+  ],
+  "family": "tool-surface",
+  "surfaces": [
+    "gateway/contract",
+    "gateway/claude-sim",
+    "mcp-direct/contract"
+  ],
+  "owner": "eval-lead",
+  "provenance": {
+    "author": "engineer (VES-1 reference impl)",
+    "created": "2026-11-06",
+    "source": "migrated",
+    "source_ref": "the MCP gateway's earlier eval intents (credit-balance)"
+  },
+  "fixture": {
+    "sim_org": "lumen-yoga",
+    "fixture_sha256": "deacb0476d15b8e967cf544d48c8cfb96a640460471ca42d5a876e70203951e8",
+    "seed": 111,
+    "clock": "2026-10-20T09:00:00Z"
+  },
+  "input": {
+    "turns": [
+      {
+        "say": "how many credits do I have left?"
+      }
+    ]
+  },
+  "expect": {
+    "calls": [
+      {
+        "tool": "billing.read",
+        "min": 1
+      }
+    ]
+  },
+  "graders": [
+    {
+      "id": "call_match",
+      "role": "gate"
+    },
+    {
+      "id": "schema_valid_args",
+      "role": "gate"
+    },
+    {
+      "id": "routing_rank",
+      "role": "advisory",
+      "params": {
+        "k": 3
+      }
+    }
+  ],
+  "oracle": {
+    "kind": "scripted",
+    "steps": [
+      {
+        "call": "billing.read",
+        "args": {
+          "vibiz": "lumen-yoga"
+        }
+      },
+      {
+        "reply": "You have 420 credits left."
+      }
+    ]
+  }
+}

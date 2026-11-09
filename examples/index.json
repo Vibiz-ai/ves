@@ -1,0 +1,414 @@
+[
+  {
+    "id": "openai-agents-python",
+    "framework": "openai-agents",
+    "language": "python",
+    "detect": {
+      "pypi": [
+        "openai-agents"
+      ],
+      "npm": [],
+      "files_any": [],
+      "grep_any": [
+        "from agents import",
+        "from agents.mcp import"
+      ]
+    },
+    "connection": {
+      "type": "command",
+      "command": [
+        "python",
+        "ves/bridge.py"
+      ]
+    },
+    "bridge": "examples/openai-agents-python/bridge.py",
+    "deps_note": "pip install openai-agents==<pin>; optional tracing: examples/openai-agents-python/ves_trace_processor.py; pin an exact version in your lockfile: the bridge was written offline against the docs, not checked against an installed copy",
+    "rank": 10
+  },
+  {
+    "id": "openai-agents-ts",
+    "framework": "openai-agents",
+    "language": "typescript",
+    "detect": {
+      "pypi": [],
+      "npm": [
+        "@openai/agents"
+      ],
+      "files_any": [],
+      "grep_any": []
+    },
+    "connection": {
+      "type": "command",
+      "command": [
+        "node",
+        "ves/bridge.ts"
+      ]
+    },
+    "bridge": "examples/openai-agents-ts/bridge.ts",
+    "deps_note": "npm i @openai/agents@<pin>; Node >= 22.18 runs .ts directly; pin an exact version in your lockfile: the bridge was written offline against the docs, not checked against an installed copy",
+    "rank": 10
+  },
+  {
+    "id": "claude-agent-sdk-ts",
+    "framework": "claude-agent-sdk",
+    "language": "typescript",
+    "detect": {
+      "pypi": [],
+      "npm": [
+        "@anthropic-ai/claude-agent-sdk"
+      ],
+      "files_any": [],
+      "grep_any": []
+    },
+    "connection": {
+      "type": "command",
+      "command": [
+        "node",
+        "ves/bridge.ts"
+      ]
+    },
+    "bridge": "examples/claude-agent-sdk-ts/bridge.ts",
+    "deps_note": "npm i @anthropic-ai/claude-agent-sdk@<pin>; pin an exact version in your lockfile: the bridge was written offline against the docs, not checked against an installed copy",
+    "rank": 10
+  },
+  {
+    "id": "claude-agent-sdk-python",
+    "framework": "claude-agent-sdk",
+    "language": "python",
+    "detect": {
+      "pypi": [
+        "claude-agent-sdk"
+      ],
+      "npm": [],
+      "files_any": [],
+      "grep_any": []
+    },
+    "connection": {
+      "type": "command",
+      "command": [
+        "python",
+        "ves/bridge.py"
+      ]
+    },
+    "bridge": "examples/claude-agent-sdk-python/bridge.py",
+    "deps_note": "pip install claude-agent-sdk==<pin>; pin an exact version in your lockfile: the bridge was written offline against the docs, not checked against an installed copy",
+    "rank": 10
+  },
+  {
+    "id": "vercel-ai-sdk",
+    "framework": "vercel-ai-sdk",
+    "language": "typescript",
+    "detect": {
+      "pypi": [],
+      "npm": [
+        "ai"
+      ],
+      "files_any": [],
+      "grep_any": [
+        "from 'ai'",
+        "from \"ai\""
+      ]
+    },
+    "connection": {
+      "type": "command",
+      "command": [
+        "node",
+        "ves/bridge.ts"
+      ]
+    },
+    "bridge": "examples/vercel-ai-sdk/bridge.ts",
+    "deps_note": "npm i ai@<pin> (AI SDK 6: map needsApproval instead of the wrapper); pin an exact version in your lockfile: the bridge was written offline against the docs, not checked against an installed copy",
+    "rank": 9
+  },
+  {
+    "id": "langgraph-python",
+    "framework": "langgraph",
+    "language": "python",
+    "detect": {
+      "pypi": [
+        "langgraph",
+        "langchain-mcp-adapters"
+      ],
+      "npm": [],
+      "files_any": [],
+      "grep_any": [
+        "from langgraph"
+      ]
+    },
+    "connection": {
+      "type": "command",
+      "command": [
+        "python",
+        "ves/bridge.py"
+      ]
+    },
+    "bridge": "examples/langgraph-python/bridge.py",
+    "deps_note": "pip install langgraph==<pin> langchain-mcp-adapters==<pin>; pin an exact version in your lockfile: the bridge was written offline against the docs, not checked against an installed copy",
+    "rank": 10
+  },
+  {
+    "id": "langgraph-js",
+    "framework": "langgraph",
+    "language": "typescript",
+    "detect": {
+      "pypi": [],
+      "npm": [
+        "@langchain/langgraph",
+        "@langchain/mcp-adapters"
+      ],
+      "files_any": [],
+      "grep_any": []
+    },
+    "connection": {
+      "type": "command",
+      "command": [
+        "node",
+        "ves/bridge.ts"
+      ]
+    },
+    "bridge": "examples/langgraph-js/bridge.ts",
+    "deps_note": "npm i @langchain/langgraph@<pin> @langchain/mcp-adapters@<pin>; pin an exact version in your lockfile: the bridge was written offline against the docs, not checked against an installed copy",
+    "rank": 10
+  },
+  {
+    "id": "crewai",
+    "framework": "crewai",
+    "language": "python",
+    "detect": {
+      "pypi": [
+        "crewai",
+        "crewai-tools"
+      ],
+      "npm": [],
+      "files_any": [],
+      "grep_any": [
+        "from crewai import"
+      ]
+    },
+    "connection": {
+      "type": "command",
+      "command": [
+        "python",
+        "ves/bridge.py"
+      ]
+    },
+    "bridge": "examples/crewai/bridge.py",
+    "deps_note": "pip install crewai==<pin> 'crewai-tools[mcp]==<pin>'; pin an exact version in your lockfile: the bridge was written offline against the docs, not checked against an installed copy",
+    "rank": 10
+  },
+  {
+    "id": "mastra",
+    "framework": "mastra",
+    "language": "typescript",
+    "detect": {
+      "pypi": [],
+      "npm": [
+        "@mastra/core",
+        "@mastra/mcp"
+      ],
+      "files_any": [],
+      "grep_any": []
+    },
+    "connection": {
+      "type": "command",
+      "command": [
+        "node",
+        "ves/bridge.ts"
+      ]
+    },
+    "bridge": "examples/mastra/bridge.ts",
+    "deps_note": "npm i @mastra/core@<pin> @mastra/mcp@<pin> (or serve the ves routes from your Mastra server and use the http connector); pin an exact version in your lockfile: the bridge was written offline against the docs, not checked against an installed copy",
+    "rank": 10
+  },
+  {
+    "id": "pydantic-ai",
+    "framework": "pydantic-ai",
+    "language": "python",
+    "detect": {
+      "pypi": [
+        "pydantic-ai",
+        "pydantic-ai-slim"
+      ],
+      "npm": [],
+      "files_any": [],
+      "grep_any": [
+        "from pydantic_ai import"
+      ]
+    },
+    "connection": {
+      "type": "command",
+      "command": [
+        "python",
+        "ves/bridge.py"
+      ]
+    },
+    "bridge": "examples/pydantic-ai/bridge.py",
+    "deps_note": "pip install pydantic-ai==<pin>; pin an exact version in your lockfile: the bridge was written offline against the docs, not checked against an installed copy",
+    "rank": 10
+  },
+  {
+    "id": "plain-python",
+    "framework": "plain-python",
+    "language": "python",
+    "detect": {
+      "pypi": [],
+      "npm": [],
+      "files_any": [
+        "pyproject.toml",
+        "requirements.txt",
+        "setup.py",
+        "Pipfile"
+      ],
+      "grep_any": []
+    },
+    "connection": {
+      "type": "command",
+      "command": [
+        "python",
+        "ves/bridge.py"
+      ]
+    },
+    "bridge": "examples/plain-python/agent.py",
+    "deps_note": "no dependencies (Python >= 3.8); runs as-is with the bundled fake LLM: copy examples/fixtures/support-desk.fake-llm.json or set VES_FAKE_LLM_RULES, then replace FakeLLM with your model client",
+    "rank": 1
+  },
+  {
+    "id": "plain-node",
+    "framework": "plain-node",
+    "language": "javascript",
+    "detect": {
+      "pypi": [],
+      "npm": [],
+      "files_any": [
+        "package.json"
+      ],
+      "grep_any": []
+    },
+    "connection": {
+      "type": "command",
+      "command": [
+        "node",
+        "ves/bridge.mjs"
+      ]
+    },
+    "bridge": "examples/plain-node/agent.mjs",
+    "deps_note": "no dependencies (Node >= 22.18); runs as-is with the bundled fake LLM (examples/fixtures/support-desk.fake-llm.json or VES_FAKE_LLM_RULES)",
+    "rank": 1
+  },
+  {
+    "id": "http-server",
+    "framework": "http",
+    "language": "typescript",
+    "detect": {
+      "pypi": [
+        "fastapi",
+        "flask",
+        "langserve"
+      ],
+      "npm": [
+        "express",
+        "fastify",
+        "hono",
+        "next",
+        "@langchain/langserve"
+      ],
+      "files_any": [],
+      "grep_any": []
+    },
+    "connection": {
+      "type": "http",
+      "base_url": "http://127.0.0.1:8000",
+      "timeout_s": 180
+    },
+    "bridge": "examples/http-server/agent.ts",
+    "deps_note": "add the four /ves/v1 routes to your server (see the file header); the example runs with `node examples/http-server/agent.ts --port 8000`, no dependencies",
+    "rank": 5
+  },
+  {
+    "id": "openai-compatible",
+    "framework": "openai-compatible",
+    "language": "any",
+    "detect": {
+      "pypi": [
+        "litellm",
+        "vllm"
+      ],
+      "npm": [],
+      "files_any": [
+        "litellm_config.yaml",
+        "litellm.config.yaml",
+        "Modelfile"
+      ],
+      "grep_any": []
+    },
+    "connection": {
+      "type": "openai-chat",
+      "base_url": "http://127.0.0.1:4000/v1",
+      "model": "support-agent",
+      "api_key_env": "AGENT_KEY",
+      "tools": "harness"
+    },
+    "bridge": null,
+    "deps_note": "no agent code: point base_url at your OpenAI-compatible /v1 endpoint; see examples/openai-compatible/ves.config.json",
+    "rank": 7
+  },
+  {
+    "id": "mcp-server-node",
+    "framework": "mcp-server",
+    "language": "typescript",
+    "detect": {
+      "pypi": [],
+      "npm": [
+        "@modelcontextprotocol/sdk"
+      ],
+      "files_any": [],
+      "grep_any": [
+        "new McpServer(",
+        "StreamableHTTPServerTransport",
+        "\"tools/list\"",
+        "'tools/list'"
+      ]
+    },
+    "connection": {
+      "type": "mcp",
+      "transport": "http",
+      "url": "http://127.0.0.1:3100/mcp",
+      "mode": "contract"
+    },
+    "bridge": null,
+    "deps_note": "no bridge: run your server locally (or in CI) and point url at it; see examples/mcp-server-node/ves.config.json (contract + host-sim variants)",
+    "rank": 8
+  },
+  {
+    "id": "mcp-server-python",
+    "framework": "mcp-server",
+    "language": "python",
+    "detect": {
+      "pypi": [
+        "mcp",
+        "fastmcp"
+      ],
+      "npm": [],
+      "files_any": [],
+      "grep_any": [
+        "FastMCP(",
+        "from mcp.server",
+        "\"tools/list\"",
+        "'tools/list'"
+      ]
+    },
+    "connection": {
+      "type": "mcp",
+      "transport": "stdio",
+      "command": [
+        "python",
+        "-m",
+        "your_server"
+      ],
+      "mode": "contract"
+    },
+    "bridge": null,
+    "deps_note": "no bridge: VES spawns your stdio server; see examples/mcp-server-python/ves.config.json",
+    "rank": 8
+  }
+]

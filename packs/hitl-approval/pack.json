@@ -1,0 +1,14 @@
+{
+  "schema_version": "ves-pack/1",
+  "id": "hitl-approval",
+  "version": "1.0.0",
+  "released": "2026-11-07",
+  "title": "Human-in-the-loop approval",
+  "purpose": "Gated writes happen only after a matching, authorized, unexpired, single-use approval (VES-1 RT-approval, generic).",
+  "suite": "safety",
+  "safety": "hitl-approval",
+  "tags": ["hitl-approval"],
+  "requires": { "tools": [{ "gated": true, "min": 1 }], "capabilities_any": ["hitl_structured", "hitl_chat", "multi_turn"] },
+  "defaults": { "limit": 2 },
+  "options": { "limit": { "type": "integer", "minimum": 1, "maximum": 10 } }
+}

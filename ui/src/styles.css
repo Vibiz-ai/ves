@@ -1,0 +1,111 @@
+@import "tailwindcss";
+
+/* Tokens mix two references: Vercel Geist for structure (hairline 1px borders, 6/8px radii,
+   14px UI text, flat chrome) and rainbrand for character (Manrope display headings, mono uppercase labels,
+   bracket chips, the segmented spend meter). One background, one surface, one ink, one muted, black primary. */
+@theme {
+  --color-shell: #fafafa;
+  --color-sheet: #ffffff;
+  --color-tile: #f5f5f5;
+  --color-chip: #f2f2f2;
+  --color-chip-active: #e3e3e3;
+  --color-line: #ebebeb;
+  --color-line-strong: #d4d4d4;
+  --color-ink: #171717;
+  --color-muted: #4d4d4d;
+  --color-faint: #737373;
+  --color-primary: #171717;
+  --color-primary-hover: #383838;
+  --color-pass: #1d7a3e;
+  --color-block: #c02a2a;
+  --color-invalid: #9a5b00;
+  --color-report: #6b6b6b;
+  --color-skip: #b4b4b4;
+  --color-hl: #fff6d6;
+  --color-hl-line: #e0b84a;
+
+  --font-sans: Geist, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-display: Manrope, Geist, system-ui, sans-serif;
+  --font-mono: "Geist Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+  --radius-xl: 12px;
+
+  --shadow-card: 0 1px 2px rgba(0,0,0,0.04);
+  --shadow-card-hover: 0 2px 4px rgba(0,0,0,0.04), 0 8px 16px -8px rgba(0,0,0,0.08);
+  --shadow-pop: 0 0 0 1px rgba(0,0,0,0.08), 0 4px 8px -4px rgba(0,0,0,0.04), 0 16px 24px -8px rgba(0,0,0,0.06);
+
+  --text-display: 48px;
+  --text-display--line-height: 1;
+  --text-display--letter-spacing: -0.045em;
+
+  --ease-site: cubic-bezier(0.33, 0, 0, 1);
+}
+
+@layer base {
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    background: var(--color-shell);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    font-size: 14px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  :focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+  button, a { -webkit-tap-highlight-color: transparent; }
+  ::selection { background: #171717; color: #fff; }
+  h1, h2 { font-family: var(--font-display); }
+}
+
+@layer components {
+  .mono-label {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--color-muted);
+  }
+  .skeleton {
+    background: var(--color-tile);
+    border-radius: 12px;
+    animation: ves-pulse 1.4s ease-in-out infinite;
+  }
+  .nav-notch { position: absolute; right: 0; width: 18px; height: 18px; color: var(--color-sheet); pointer-events: none; }
+
+  /* card.md rendering */
+  .md { font-size: 15px; line-height: 1.6; color: var(--color-ink); }
+  .md h2 { font-size: 28px; font-weight: 600; letter-spacing: -0.02em; line-height: 1.15; margin: 0 0 16px; }
+  .md h3 { font-size: 20px; font-weight: 600; letter-spacing: -0.01em; margin: 32px 0 12px; }
+  .md h4, .md h5, .md h6 { font-size: 16px; font-weight: 600; margin: 24px 0 8px; }
+  .md p { margin: 0 0 12px; }
+  .md ul, .md ol { margin: 0 0 12px; padding-left: 20px; }
+  .md ul { list-style: disc; }
+  .md ol { list-style: decimal; }
+  .md li { margin: 2px 0; }
+  .md code { font-family: var(--font-mono); font-size: 0.86em; background: var(--color-tile); border-radius: 4px; padding: 1px 5px; overflow-wrap: anywhere; }
+  .md pre { background: var(--color-tile); border-radius: 12px; padding: 14px 16px; overflow-x: auto; margin: 0 0 12px; }
+  .md pre code { background: none; padding: 0; }
+  .md blockquote { border-radius: 14px; background: var(--color-tile); padding: 12px 16px; margin: 0 0 16px; color: var(--color-ink); }
+  .md blockquote p:last-child { margin: 0; }
+  .md a { text-decoration: underline; text-underline-offset: 2px; }
+  .md .md-table { overflow-x: auto; margin: 0 0 16px; border-radius: 14px; border: 1px solid var(--color-line); }
+  .md table { border-collapse: collapse; width: 100%; font-size: 13px; }
+  .md th { font-family: var(--font-mono); font-size: 11px; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; color: var(--color-muted); text-align: left; background: var(--color-tile); }
+  .md th, .md td { padding: 8px 12px; border-bottom: 1px solid var(--color-line); white-space: nowrap; }
+  .md tr:last-child td { border-bottom: 0; }
+  .md hr { border: 0; border-top: 1px solid var(--color-line); margin: 24px 0; }
+}
+
+@keyframes ves-pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.55; } }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+}

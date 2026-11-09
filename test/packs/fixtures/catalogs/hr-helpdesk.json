@@ -1,0 +1,219 @@
+{
+  "$schema": "https://vibiz.ai/schemas/ves/config-1.json",
+  "schema_version": "ves-config/1",
+  "project": "hr-helpdesk",
+  "agent": {
+    "name": "hr-helpdesk",
+    "framework": "langgraph",
+    "connection": {
+      "type": "mock"
+    }
+  },
+  "$comment": "Made-up catalog #2 for the packs tests (an HR helpdesk agent): dotted/colon/slash names, an explicitly gated plain write, two variants. Not shipped with any pack.",
+  "tools": {
+    "backend": {
+      "type": "sim"
+    },
+    "catalog": [
+      {
+        "name": "hr.lookup_employee",
+        "classes": [
+          "read"
+        ],
+        "description": "Employee profile by id.",
+        "input_schema": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "employee_id": {
+              "type": "string",
+              "minLength": 3
+            }
+          },
+          "required": [
+            "employee_id"
+          ]
+        }
+      },
+      {
+        "name": "hr:list_open_requests",
+        "classes": [
+          "read"
+        ],
+        "title": "Open HR requests",
+        "description": "Every open HR request.",
+        "input_schema": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {},
+          "required": []
+        }
+      },
+      {
+        "name": "leave/update_balance",
+        "classes": [
+          "write"
+        ],
+        "title": "Update leave balance",
+        "description": "Set the remaining leave days.",
+        "input_schema": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "employee_id": {
+              "type": "string",
+              "minLength": 3
+            },
+            "days": {
+              "type": "number",
+              "minimum": 0.5,
+              "maximum": 30
+            }
+          },
+          "required": [
+            "employee_id",
+            "days"
+          ]
+        }
+      },
+      {
+        "name": "payroll.adjust",
+        "classes": [
+          "write"
+        ],
+        "gated": true,
+        "title": "Adjust payroll",
+        "description": "One-off payroll correction.",
+        "input_schema": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "employee_id": {
+              "type": "string",
+              "minLength": 3
+            },
+            "amount_eur": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 5000
+            },
+            "reason": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "employee_id",
+            "amount_eur"
+          ]
+        }
+      },
+      {
+        "name": "comms.post_announcement",
+        "classes": [
+          "outward"
+        ],
+        "title": "Post announcement",
+        "description": "Post to a company channel.",
+        "input_schema": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "channel": {
+              "enum": [
+                "all-staff",
+                "managers"
+              ]
+            },
+            "text": {
+              "type": "string",
+              "minLength": 5
+            }
+          },
+          "required": [
+            "channel",
+            "text"
+          ]
+        }
+      },
+      {
+        "name": "hr.offboard_employee",
+        "classes": [
+          "destructive"
+        ],
+        "title": "Offboard employee",
+        "description": "Revoke all access and archive the employee.",
+        "input_schema": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "employee_id": {
+              "type": "string",
+              "minLength": 3
+            },
+            "confirm": {
+              "const": true
+            }
+          },
+          "required": [
+            "employee_id",
+            "confirm"
+          ]
+        }
+      },
+      {
+        "name": "it.create_ticket",
+        "classes": [
+          "write"
+        ],
+        "title": "Create IT ticket",
+        "description": "Open a ticket for the IT team.",
+        "input_schema": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "summary": {
+              "type": "string",
+              "minLength": 5
+            }
+          },
+          "required": [
+            "summary"
+          ]
+        }
+      }
+    ]
+  },
+  "hitl": {
+    "authorized": [
+      "owner",
+      "member"
+    ]
+  },
+  "fixtures": {
+    "principal": {
+      "role": "owner",
+      "tenant": "globomantics",
+      "id": "u_hr_lead"
+    }
+  },
+  "variants": {
+    "default": {
+      "capabilities": [
+        "multi_turn",
+        "hitl_structured"
+      ]
+    },
+    "slack": {
+      "capabilities": [
+        "multi_turn",
+        "hitl_structured"
+      ],
+      "format": {
+        "max_chars": 3000,
+        "split": "paragraph"
+      }
+    }
+  },
+  "packs": [],
+  "suites": []
+}

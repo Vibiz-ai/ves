@@ -1,0 +1,60 @@
+{
+  "template": "read-direct",
+  "version": 1,
+  "tiers": [
+    "smoke",
+    "release",
+    "research"
+  ],
+  "$comment": "The right read tool, called with the args the request implies (subset match).",
+  "for_each": {
+    "tool": {
+      "classes_any": [
+        "read"
+      ]
+    },
+    "limit": "{{options.read_limit}}"
+  },
+  "twin_of": null,
+  "case": {
+    "capability": "tool_use.read_direct",
+    "tags": [
+      "core-tool-use"
+    ],
+    "variants": [
+      "*"
+    ],
+    "fixture": {
+      "seed": "{{seed}}",
+      "clock": "2026-01-05T09:00:00Z"
+    },
+    "input": {
+      "turns": [
+        {
+          "say": "{{tool.intent}}"
+        }
+      ]
+    },
+    "expect": {
+      "calls": [
+        {
+          "tool": "{{tool.name}}",
+          "args": "{{tool.args}}",
+          "min": 1
+        }
+      ]
+    },
+    "oracle": {
+      "kind": "scripted",
+      "steps": [
+        {
+          "call": "{{tool.name}}",
+          "args": "{{tool.args}}"
+        },
+        {
+          "reply": "Here is what I found."
+        }
+      ]
+    }
+  }
+}

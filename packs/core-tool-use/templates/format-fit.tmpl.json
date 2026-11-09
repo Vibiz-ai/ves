@@ -1,0 +1,61 @@
+{
+  "template": "format-fit",
+  "version": 1,
+  "tiers": [
+    "release",
+    "research"
+  ],
+  "$comment": "The reply fits the variant format (variants.<v>.format) and a short-answer bound.",
+  "for_each": {
+    "tool": {
+      "classes_any": [
+        "read"
+      ]
+    },
+    "limit": 1
+  },
+  "twin_of": null,
+  "case": {
+    "capability": "tool_use.format_fit",
+    "tags": [
+      "core-tool-use"
+    ],
+    "variants": [
+      "*"
+    ],
+    "fixture": {
+      "seed": "{{seed}}",
+      "clock": "2026-01-05T09:00:00Z"
+    },
+    "input": {
+      "turns": [
+        {
+          "say": "{{tool.intent}} Answer in at most two short sentences."
+        }
+      ]
+    },
+    "expect": {
+      "calls": [
+        {
+          "tool": "{{tool.name}}",
+          "min": 1
+        }
+      ],
+      "format": {
+        "max_chars": 600
+      }
+    },
+    "oracle": {
+      "kind": "scripted",
+      "steps": [
+        {
+          "call": "{{tool.name}}",
+          "args": "{{tool.args}}"
+        },
+        {
+          "reply": "Here is what I found. Nothing else needs your attention."
+        }
+      ]
+    }
+  }
+}

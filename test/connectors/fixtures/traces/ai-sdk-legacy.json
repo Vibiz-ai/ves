@@ -1,0 +1,80 @@
+{
+ "resourceSpans": [
+  {
+   "scopeSpans": [
+    {
+     "spans": [
+      {
+       "traceId": "0af7651916cd43dd8448eb211c80319c",
+       "spanId": "0000000000000001",
+       "name": "ai.generateText",
+       "kind": 1,
+       "startTimeUnixNano": "1767603600001000000",
+       "endTimeUnixNano": "1767603600001500000",
+       "attributes": [
+        {
+         "key": "ai.model.id",
+         "value": {
+          "stringValue": "gemini-x"
+         }
+        },
+        {
+         "key": "ai.response.text",
+         "value": {
+          "stringValue": "Email sent to jane."
+         }
+        },
+        {
+         "key": "ai.usage.promptTokens",
+         "value": {
+          "intValue": "40"
+         }
+        },
+        {
+         "key": "ai.usage.completionTokens",
+         "value": {
+          "intValue": "5"
+         }
+        }
+       ]
+      },
+      {
+       "traceId": "0af7651916cd43dd8448eb211c80319c",
+       "spanId": "0000000000000002",
+       "name": "ai.toolCall",
+       "kind": 1,
+       "startTimeUnixNano": "1767603600002000000",
+       "endTimeUnixNano": "1767603600002500000",
+       "attributes": [
+        {
+         "key": "ai.toolCall.name",
+         "value": {
+          "stringValue": "send_email"
+         }
+        },
+        {
+         "key": "ai.toolCall.id",
+         "value": {
+          "stringValue": "t1"
+         }
+        },
+        {
+         "key": "ai.toolCall.args",
+         "value": {
+          "stringValue": "{\"to\": \"jane@acme.example\", \"subject\": \"Hi\", \"body\": \"Done\"}"
+         }
+        },
+        {
+         "key": "ai.toolCall.result",
+         "value": {
+          "stringValue": "{\"status\": \"sent\"}"
+         }
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  }
+ ]
+}

@@ -1,0 +1,222 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://vibiz.ai/schemas/ves/pack-1.json",
+  "title": "VES pack manifest (packs/<id>/pack.json, DESIGN-agnostic §4.1)",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "id",
+    "version",
+    "released",
+    "title",
+    "purpose"
+  ],
+  "properties": {
+    "$comment": {
+      "type": "string"
+    },
+    "schema_version": {
+      "const": "ves-pack/1"
+    },
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9-]{1,63}$"
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+    },
+    "released": {
+      "type": "string",
+      "format": "date"
+    },
+    "title": {
+      "type": "string",
+      "minLength": 1
+    },
+    "purpose": {
+      "type": "string",
+      "minLength": 1
+    },
+    "suite": {
+      "enum": [
+        "smoke",
+        "regression",
+        "capability",
+        "safety",
+        "sealed"
+      ]
+    },
+    "safety": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9-]{1,39}$"
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "requires": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "tools": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/selector"
+          }
+        },
+        "capabilities_any": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "variant_roles_any": {
+          "type": "array",
+          "items": {
+            "enum": [
+              "agent",
+              "host-sim",
+              "contract"
+            ]
+          }
+        },
+        "profile": {
+          "type": "string"
+        }
+      }
+    },
+    "defaults": {
+      "type": "object"
+    },
+    "options": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object"
+      }
+    },
+    "cases": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "profile": {
+      "type": "string"
+    }
+  },
+  "$defs": {
+    "selector": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "classes_any": {
+          "type": "array",
+          "items": {
+            "enum": [
+              "read",
+              "write",
+              "spend",
+              "outward",
+              "destructive",
+              "gated"
+            ]
+          }
+        },
+        "classes_all": {
+          "type": "array",
+          "items": {
+            "enum": [
+              "read",
+              "write",
+              "spend",
+              "outward",
+              "destructive",
+              "gated"
+            ]
+          }
+        },
+        "classes_none": {
+          "type": "array",
+          "items": {
+            "enum": [
+              "read",
+              "write",
+              "spend",
+              "outward",
+              "destructive",
+              "gated"
+            ]
+          }
+        },
+        "gated": {
+          "type": "boolean"
+        },
+        "returns_text": {
+          "type": "boolean"
+        },
+        "has_required_args": {
+          "type": "boolean"
+        },
+        "distinct_from": {
+          "type": "string"
+        },
+        "name_matches": {
+          "type": "string",
+          "format": "regex"
+        },
+        "min": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "template": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "template",
+        "version",
+        "case"
+      ],
+      "properties": {
+        "$comment": {
+          "type": "string"
+        },
+        "template": {
+          "type": "string",
+          "pattern": "^[a-z0-9][a-z0-9-]{1,63}$"
+        },
+        "version": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "tiers": {
+          "type": "array",
+          "items": {
+            "enum": [
+              "smoke",
+              "release",
+              "research"
+            ]
+          }
+        },
+        "for_each": {
+          "type": "object"
+        },
+        "twin_of": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "case": {
+          "type": "object"
+        }
+      }
+    }
+  }
+}

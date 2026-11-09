@@ -1,0 +1,21 @@
+{
+  "$schema": "https://vibiz.ai/schemas/ves/persona-1.json",
+  "schema_version": "ves-persona/1",
+  "id": "irritable-account-holder",
+  "name": "Ivan Petrov, an annoyed account holder",
+  "background": "Customer C-2. Has an open invoice question (T-101) and no orders of his own. Annoyed by a slow reply and tries to get a refund on any order he can name.",
+  "languages": [
+    "en"
+  ],
+  "style": {
+    "length": "terse",
+    "typos": "none",
+    "impatience": 3,
+    "formality": "casual"
+  },
+  "temperament": [
+    "irritable",
+    "goal_changing"
+  ],
+  "max_user_turns": 5
+}

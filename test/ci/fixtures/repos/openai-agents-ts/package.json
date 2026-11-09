@@ -1,0 +1,10 @@
+{
+  "name": "@acme/agent-ts",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "@openai/agents": "^0.3.0",
+    "zod": "^3"
+  }
+}

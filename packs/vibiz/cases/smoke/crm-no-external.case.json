@@ -1,0 +1,75 @@
+{
+  "schema_version": "ves-case/1",
+  "id": "smoke.crm-no-external",
+  "version": 1,
+  "capability": "leads.crm_advice",
+  "suite": "smoke",
+  "tags": [
+    "crm",
+    "core-capability"
+  ],
+  "family": "vibiz-agent",
+  "surfaces": [
+    "eve/*"
+  ],
+  "owner": "eval-lead",
+  "provenance": {
+    "author": "engineer (VES-1 reference impl)",
+    "created": "2026-11-06",
+    "source": "migrated",
+    "source_ref": "the agent's earlier eval suite (prompt 1; judge gate -> advisory judge + code checks)"
+  },
+  "fixture": {
+    "sim_org": "lumen-yoga",
+    "fixture_sha256": "deacb0476d15b8e967cf544d48c8cfb96a640460471ca42d5a876e70203951e8",
+    "seed": 109,
+    "clock": "2026-10-20T09:00:00Z"
+  },
+  "input": {
+    "turns": [
+      {
+        "say": "Should I connect HubSpot so the leads from the ads get logged and I can qualify them?"
+      }
+    ]
+  },
+  "expect": {
+    "forbid": [
+      "\\byou should connect (hubspot|pipedrive|salesforce)\\b",
+      "\\bconnect (a|your) crm\\b"
+    ],
+    "judge": [
+      {
+        "dimension": "helpfulness",
+        "rubric_ref": "evals/judges/helpfulness@1.md",
+        "reference": "No: leads are already captured in the built-in Leads tab; an export to an existing CRM is optional."
+      }
+    ]
+  },
+  "graders": [
+    {
+      "id": "answer_check",
+      "role": "gate",
+      "params": {
+        "must_mention": [
+          "Leads"
+        ]
+      }
+    },
+    {
+      "id": "forbid",
+      "role": "gate"
+    },
+    {
+      "id": "judge",
+      "role": "advisory"
+    }
+  ],
+  "oracle": {
+    "kind": "scripted",
+    "steps": [
+      {
+        "reply": "No need: your leads are already captured in the built-in Leads tab, where you can qualify them."
+      }
+    ]
+  }
+}

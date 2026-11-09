@@ -1,0 +1,1 @@
+{"schema_version":"ves-case/2","id":"demo.refund","version":1,"suite":"regression","capability":"orders.refund","surfaces":["default"],"graders":[{"id":"call_match","role":"gate"}],"provenance":{"source":"synthetic"}}
